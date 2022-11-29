@@ -47,5 +47,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>To Report Enemy Vehicles</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>For Testing Purposes</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>For Testing Purposes</string>
 </dict>
 </plist>

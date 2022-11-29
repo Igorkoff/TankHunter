@@ -2,19 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:tank_hunter/home_page.dart';
 import 'package:tank_hunter/profile_page.dart';
 
-void main() {
-  runApp(const TankHunter());
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(TankHunter());
 }
 
 class TankHunter extends StatelessWidget {
-  const TankHunter({Key? key}) : super(key: key);
+  TankHunter({Key? key}) : super(key: key);
+
+  final Future<FirebaseApp> _fbApp = Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.green),
-      home: const RootPage(),
+      home: FutureBuilder(
+        future: _fbApp,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            print('You Have an Error! ${snapshot.error.toString()}');
+            return const Text('Something Went Wrong!');
+          } else if (snapshot.hasData) {
+            return const RootPage();
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
     );
   }
 }
@@ -28,13 +50,14 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   int currentPage = 0;
-  List<Widget> pages = const [
+  List<Widget> pages = [
     HomePage(),
     ProfilePage(),
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.amber.shade300,
       appBar: AppBar(
         title: const Text('Tank Hunter'),
       ),

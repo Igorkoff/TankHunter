@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "16513369232",
+    "project_id": "tank-hunter-tud",
+    "storage_bucket": "tank-hunter-tud.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16513369232:android:a92c69cf33aa245abfc415",
+        "android_client_info": {
+          "package_name": "com.tankhunter.tank_hunter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16513369232-hb2vjkckpmf8igf23o2trj0lg789trte.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCJr3gNGjmRK0Fxyka17hm_57ly60hVlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16513369232-hb2vjkckpmf8igf23o2trj0lg789trte.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
