@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,14 +16,34 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   File? image;
+  String imageURL = '';
+
+  final CollectionReference _reference = FirebaseFirestore.instance.collection('reports');
 
   Future pickImage(ImageSource source) async {
     try {
-      final image = await ImagePicker().pickImage(source: source);
+      XFile? image = await ImagePicker().pickImage(source: source);
       if (image == null) return;
 
       final imageTemporary = File(image.path);
       setState(() => this.image = imageTemporary);
+
+      String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      /* Upload to Firebase */
+
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceDirImages = referenceRoot.child('images');
+
+      Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+
+      // Store the File
+
+      try {
+        await referenceImageToUpload.putFile(File(image.path));
+        imageURL = await referenceImageToUpload.getDownloadURL();
+        print(imageURL);
+      } catch (error) {}
     } on PlatformException catch (e) {
       print('Failed to Pick Image: $e');
     }
@@ -43,14 +65,6 @@ class _HomePageState extends State<HomePage> {
                     fit: BoxFit.cover,
                   )
                 : const FlutterLogo(size: 160),
-            const SizedBox(height: 24),
-            const Text(
-              'Image Picker',
-              style: TextStyle(
-                fontSize: 48,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
             const SizedBox(height: 48),
             buildButton(
               title: 'Pick Gallery',
@@ -64,6 +78,35 @@ class _HomePageState extends State<HomePage> {
               onClicked: () => pickImage(ImageSource.camera),
             ),
             const SizedBox(height: 24),
+            const TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+                hintText: 'Type Comment',
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () async {
+                print(imageURL);
+                if (imageURL.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload an Image')));
+                  return;
+                }
+                String itemName = 'Test';
+                String itemQuantity = '50';
+
+                Map<String, String> dataToSend = {
+                  'name': itemName,
+                  'quantity': itemQuantity,
+                  'image': imageURL,
+                };
+                _reference.add(dataToSend);
+              },
+              child: const Text('Submit Report'),
+            ),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(

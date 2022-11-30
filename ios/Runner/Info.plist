@@ -53,5 +53,9 @@
 	<string>For Testing Purposes</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>For Testing Purposes</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>To Report Enemy Vehicles</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>To Report Enemy Vehicles</string>
 </dict>
 </plist>
