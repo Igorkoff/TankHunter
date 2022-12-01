@@ -4,15 +4,21 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Report {
-  Report({required this.image, required this.currentLocation, required this.currentDateTime});
+  Report();
 
-  late File image;
-  late String userComment;
-  late Position currentLocation;
-  late DateTime currentDateTime;
+  Report.create({
+    required this.image,
+    required this.userComment,
+    required this.currentLocation,
+    required this.currentDateTime,
+  });
+
+  File? image;
+  String? userComment;
+  Position? currentLocation;
+  DateTime? currentDateTime;
   bool isVerified = false;
 
-  // TODO: implement compass direction (smooth_compass or flutter_compass)
   // TODO: implement dictionary of objects returned from object detector
 
   setImage(ImageSource source) async {

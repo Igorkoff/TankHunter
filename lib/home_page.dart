@@ -1,11 +1,10 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tank_hunter/russian_losses.dart';
+
+import 'domain/report.dart';
+import 'data/database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,38 +14,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Report report = Report();
   File? image;
-  String imageURL = '';
-
-  final CollectionReference _reference = FirebaseFirestore.instance.collection('reports');
 
   Future pickImage(ImageSource source) async {
-    try {
-      XFile? image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
+    await report.setImage(source);
+    await report.setCurrentLocation();
+    report.setUserComment('Test');
+    report.setCurrentDateTime();
 
-      final imageTemporary = File(image.path);
-      setState(() => this.image = imageTemporary);
-
-      String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
-
-      /* Upload to Firebase */
-
-      Reference referenceRoot = FirebaseStorage.instance.ref();
-      Reference referenceDirImages = referenceRoot.child('images');
-
-      Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
-
-      // Store the File
-
-      try {
-        await referenceImageToUpload.putFile(File(image.path));
-        imageURL = await referenceImageToUpload.getDownloadURL();
-        print(imageURL);
-      } catch (error) {}
-    } on PlatformException catch (e) {
-      print('Failed to Pick Image: $e');
-    }
+    setState(() => image = report.image);
   }
 
   @override
@@ -89,36 +66,18 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () async {
-                print(imageURL);
-                if (imageURL.isEmpty) {
+                if (image == null) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload an Image')));
                   return;
                 }
-                String itemName = 'Test';
-                String itemQuantity = '50';
-
-                Map<String, String> dataToSend = {
-                  'name': itemName,
-                  'quantity': itemQuantity,
-                  'image': imageURL,
-                };
-                _reference.add(dataToSend);
+                await Database.uploadReport(report);
+                setState(() {
+                  image = null;
+                });
               },
               child: const Text('Submit Report'),
             ),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) {
-                      return const RussianLossesPage();
-                    },
-                  ),
-                );
-              },
-              child: const Text('Russian Losses'),
-            ),
             Spacer(),
           ],
         ),

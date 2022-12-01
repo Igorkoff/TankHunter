@@ -62,12 +62,6 @@ class _RootPageState extends State<RootPage> {
         title: const Text('Tank Hunter'),
       ),
       body: pages[currentPage],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          debugPrint('Floating Action Button');
-        },
-        child: const Icon(Icons.add),
-      ),
       bottomNavigationBar: NavigationBar(
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
