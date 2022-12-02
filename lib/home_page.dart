@@ -7,6 +7,8 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'domain/report.dart';
 import 'data/database.dart';
 
+// TODO: some feedback for user
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -39,7 +41,7 @@ class _HomePageState extends State<HomePage> {
 
       setState(() => image = report.image);
     } else {
-      print('Image Not Selected');
+      debugPrint('Image Not Selected');
       return;
     }
   }
@@ -52,7 +54,7 @@ class _HomePageState extends State<HomePage> {
         GestureType.onVerticalDragDown,
       ],
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+        padding: const EdgeInsets.all(24),
         children: [
           image != null ? Image.file(image!, fit: BoxFit.cover) : const FlutterLogo(size: 160),
           const SizedBox(height: 48),

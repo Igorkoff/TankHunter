@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tank_hunter/home_page.dart';
-import 'package:tank_hunter/profile_page.dart';
+import 'package:tank_hunter/losses_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -29,7 +29,7 @@ class TankHunter extends StatelessWidget {
         future: _fbApp,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            print('You Have an Error! ${snapshot.error.toString()}');
+            debugPrint('You Have an Error! ${snapshot.error.toString()}');
             return const Text('Something Went Wrong!');
           } else if (snapshot.hasData) {
             return const RootPage();
@@ -54,8 +54,8 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
   int currentPage = 0;
   List<Widget> pages = [
-    HomePage(),
-    ProfilePage(),
+    const HomePage(),
+    const LossesPage(),
   ];
   @override
   Widget build(BuildContext context) {

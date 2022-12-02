@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import '../domain/report.dart';
 
 class Database {
@@ -34,7 +35,7 @@ class Database {
     };
 
     try {
-      collection.add(dataToSend).then((documentSnapshot) => print("Added Data with ID: ${documentSnapshot.id}"));
+      collection.add(dataToSend).then((documentSnapshot) => debugPrint("Added Data with ID: ${documentSnapshot.id}"));
     } catch (e) {
       return Future.error('Failed to Upload Report to Firebase: $e');
     }
