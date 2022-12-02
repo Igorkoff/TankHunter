@@ -41,6 +41,7 @@ dependencies:
   image_picker: ^0.8.6
   geolocator: ^9.0.2
   intl: ^0.17.0
+  keyboard_dismisser: ^3.0.0
 
 dev_dependencies:
   flutter_test:

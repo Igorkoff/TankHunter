@@ -21,7 +21,10 @@ class TankHunter extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.green),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: const Color.fromRGBO(255, 253, 250, 1),
+      ),
       home: FutureBuilder(
         future: _fbApp,
         builder: (context, snapshot) {
@@ -57,15 +60,17 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.amber.shade300,
       appBar: AppBar(
         title: const Text('Tank Hunter'),
+        backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
       ),
       body: pages[currentPage],
       bottomNavigationBar: NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+          NavigationDestination(icon: Icon(Icons.add_a_photo, color: Colors.white), label: 'Report'),
+          NavigationDestination(icon: Icon(Icons.person_off, color: Colors.white), label: 'Profile'),
         ],
         onDestinationSelected: (int index) {
           setState(() {

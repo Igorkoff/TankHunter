@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 import 'domain/report.dart';
 import 'data/database.dart';
@@ -14,96 +15,156 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final commentFocusNode = FocusNode();
+  final commentController = TextEditingController();
+
+  CivilianPresence civilianPresence = CivilianPresence.unknown;
+
   Report report = Report();
   File? image;
 
+  @override
+  void initState() {
+    super.initState();
+
+    commentController.addListener(() => setState(() {}));
+  }
+
   Future pickImage(ImageSource source) async {
     await report.setImage(source);
-    await report.setCurrentLocation();
-    report.setUserComment('Test');
-    report.setCurrentDateTime();
 
-    setState(() => image = report.image);
+    if (report.image != null) {
+      await report.setCurrentLocation();
+      report.setCurrentDateTime();
+
+      setState(() => image = report.image);
+    } else {
+      print('Image Not Selected');
+      return;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: EdgeInsets.all(32),
-        child: Column(
-          children: [
-            const Spacer(),
-            image != null
-                ? Image.file(
-                    image!,
-                    width: 160,
-                    height: 160,
-                    fit: BoxFit.cover,
-                  )
-                : const FlutterLogo(size: 160),
-            const SizedBox(height: 48),
-            buildButton(
+    return KeyboardDismisser(
+      gestures: const [
+        GestureType.onTap,
+        GestureType.onVerticalDragDown,
+      ],
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
+        children: [
+          image != null ? Image.file(image!, fit: BoxFit.cover) : const FlutterLogo(size: 160),
+          const SizedBox(height: 48),
+          buildButton(
               title: 'Pick Gallery',
               icon: Icons.image_outlined,
-              onClicked: () => pickImage(ImageSource.gallery),
+              onClicked: () async {
+                await pickImage(ImageSource.gallery);
+
+                if (context.mounted && image != null) {
+                  FocusScope.of(context).requestFocus(commentFocusNode);
+                }
+              }),
+          const SizedBox(height: 24),
+          buildComment(),
+          const SizedBox(height: 24),
+          const Text(
+            'Civilian Presence in the Area?',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 24),
-            buildButton(
-              title: 'Pick Camera',
-              icon: Icons.camera_alt_outlined,
-              onClicked: () => pickImage(ImageSource.camera),
-            ),
-            const SizedBox(height: 24),
-            const TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                filled: true,
-                fillColor: Colors.white,
-                hintText: 'Type Comment',
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () async {
+          ),
+          const SizedBox(height: 12),
+          buildRadioButton(title: 'Yes, there are some civilians.', value: CivilianPresence.yes),
+          buildRadioButton(title: 'No, there are no civilians.', value: CivilianPresence.no),
+          buildRadioButton(title: 'I don\'t know.', value: CivilianPresence.unknown),
+          const SizedBox(height: 12),
+          buildButton(
+              title: 'Submit Report',
+              icon: Icons.add_location,
+              onClicked: () async {
                 if (image == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload an Image')));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload an Image')));
                   return;
                 }
-                await Database.uploadReport(report);
-                setState(() {
-                  image = null;
-                });
-              },
-              child: const Text('Submit Report'),
-            ),
-            const SizedBox(height: 12),
-            Spacer(),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
-Widget buildButton({
-  required String title,
-  required IconData icon,
-  required VoidCallback onClicked,
-}) =>
-    ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(56),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        textStyle: const TextStyle(fontSize: 20),
-      ),
-      onPressed: onClicked,
-      child: Row(
-        children: [
-          Icon(icon, size: 28),
-          const SizedBox(width: 16),
-          Text(title),
+                report.setUserComment(commentController.text);
+                report.setCivilianPresence(civilianPresence);
+                await Database.uploadReport(report);
+
+                if (context.mounted) {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                }
+
+                setState(() {
+                  report.reset();
+
+                  image = null;
+                  commentController.clear();
+                  civilianPresence = CivilianPresence.unknown;
+                });
+              }),
+          const SizedBox(height: 12),
         ],
       ),
     );
+  }
+
+  Widget buildComment() => TextFormField(
+        focusNode: commentFocusNode,
+        controller: commentController,
+        minLines: 1,
+        maxLines: 4,
+        textAlign: TextAlign.justify,
+        decoration: InputDecoration(
+          labelText: 'Comment (Optional)',
+          prefixIcon: const Icon(Icons.comment),
+          suffixIcon: commentController.text.isEmpty
+              ? Container(width: 0)
+              : IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => commentController.clear(),
+                ),
+          border: const OutlineInputBorder(),
+        ),
+        keyboardType: TextInputType.multiline,
+        textInputAction: TextInputAction.done,
+      );
+
+  Widget buildRadioButton({
+    required String title,
+    required CivilianPresence value,
+  }) =>
+      RadioListTile<CivilianPresence>(
+        title: Text(title),
+        value: value,
+        groupValue: civilianPresence,
+        onChanged: (CivilianPresence? value) {
+          setState(() {
+            civilianPresence = value!;
+          });
+        },
+      );
+
+  Widget buildButton({
+    required String title,
+    required IconData icon,
+    required VoidCallback onClicked,
+  }) =>
+      ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(56),
+          textStyle: const TextStyle(fontSize: 18),
+        ),
+        onPressed: onClicked,
+        child: Row(
+          children: [
+            Icon(icon, size: 28),
+            const SizedBox(width: 16),
+            Text(title),
+          ],
+        ),
+      );
+}

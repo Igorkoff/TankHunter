@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:intl/intl.dart';
 import '../domain/report.dart';
 
 class Database {
@@ -24,16 +23,13 @@ class Database {
     final imageURL = await uploadImage(report.image!);
     final CollectionReference collection = FirebaseFirestore.instance.collection('reports');
 
-    DateFormat dateFormat = DateFormat("dd.MM.yyyy HH:mm");
-    String time = dateFormat.format(report.currentDateTime!);
-
     Map<String, dynamic> dataToSend = {
       'image': imageURL,
       'comment': report.userComment!,
-      'latitude': report.currentLocation!.latitude,
-      'longitude': report.currentLocation!.longitude,
+      'civilians': report.civilianPresence!,
+      'location': GeoPoint(report.currentLocation!.latitude, report.currentLocation!.longitude),
       'heading': report.currentLocation!.heading,
-      'time': time,
+      'time': report.currentDateTime!,
       'verified': report.isVerified,
     };
 

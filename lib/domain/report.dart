@@ -3,18 +3,22 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
+enum CivilianPresence { yes, no, unknown }
+
 class Report {
   Report();
 
   Report.create({
     required this.image,
     required this.userComment,
+    required this.civilianPresence,
     required this.currentLocation,
     required this.currentDateTime,
   });
 
   File? image;
   String? userComment;
+  String? civilianPresence;
   Position? currentLocation;
   DateTime? currentDateTime;
   bool isVerified = false;
@@ -34,6 +38,20 @@ class Report {
 
   setUserComment(String value) {
     userComment = value;
+  }
+
+  setCivilianPresence(CivilianPresence value) {
+    switch (value) {
+      case CivilianPresence.yes:
+        civilianPresence = 'Yes';
+        break;
+      case CivilianPresence.no:
+        civilianPresence = 'No';
+        break;
+      case CivilianPresence.unknown:
+        civilianPresence = 'Unknown';
+        break;
+    }
   }
 
   setCurrentLocation() async {
@@ -65,5 +83,13 @@ class Report {
 
   setIsVerified(bool value) {
     isVerified = value;
+  }
+
+  reset() {
+    image = null;
+    userComment = null;
+    civilianPresence = null;
+    currentLocation = null;
+    currentDateTime = null;
   }
 }
