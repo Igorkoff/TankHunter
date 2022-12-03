@@ -28,7 +28,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
     commentController.addListener(() => setState(() {}));
   }
 
@@ -56,18 +55,33 @@ class _HomePageState extends State<HomePage> {
       child: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          image != null ? Image.file(image!, fit: BoxFit.cover) : const FlutterLogo(size: 160),
-          const SizedBox(height: 48),
-          buildButton(
-              title: 'Pick Gallery',
-              icon: Icons.image_outlined,
-              onClicked: () async {
-                await pickImage(ImageSource.gallery);
+          Center(
+            child: Column(
+              children: const [
+                Text('Report the Enemy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                SizedBox(height: 24),
+              ],
+            ),
+          ),
+          MaterialButton(
+            height: 220,
+            padding: EdgeInsets.zero,
+            shape: Border.all(color: Colors.grey),
+            onPressed: () async {
+              await pickImage(ImageSource.gallery);
 
-                if (context.mounted && image != null) {
-                  FocusScope.of(context).requestFocus(commentFocusNode);
-                }
-              }),
+              if (context.mounted && image != null) {
+                FocusScope.of(context).requestFocus(commentFocusNode);
+              }
+            },
+            child: image != null
+                ? Image.file(image!, fit: BoxFit.cover)
+                : const Icon(
+                    Icons.camera_alt,
+                    color: Colors.blue,
+                    size: 45,
+                  ),
+          ),
           const SizedBox(height: 24),
           buildComment(),
           const SizedBox(height: 24),
@@ -88,7 +102,11 @@ class _HomePageState extends State<HomePage> {
               icon: Icons.add_location,
               onClicked: () async {
                 if (image == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload an Image')));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 1),
+                    content: Text('Error: Upload an Image'),
+                  ));
                   return;
                 }
 
@@ -98,15 +116,21 @@ class _HomePageState extends State<HomePage> {
 
                 if (context.mounted) {
                   FocusScope.of(context).requestFocus(FocusNode());
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 1),
+                      content: Text('Thank You for Your Service!'),
+                    ),
+                  );
+
+                  setState(() {
+                    report.reset();
+                    image = null;
+                    commentController.clear();
+                    civilianPresence = CivilianPresence.unknown;
+                  });
                 }
-
-                setState(() {
-                  report.reset();
-
-                  image = null;
-                  commentController.clear();
-                  civilianPresence = CivilianPresence.unknown;
-                });
               }),
           const SizedBox(height: 12),
         ],
