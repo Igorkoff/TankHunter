@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'domain/losses.dart';
+import '../../domain/losses.dart';
 
 // TODO: cache data and query once a day
 // TODO: download icons and use them locally

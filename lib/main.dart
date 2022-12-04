@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tank_hunter/home_page.dart';
-import 'package:tank_hunter/losses_page.dart';
+import 'package:tank_hunter/presentation/pages/home_page.dart';
+import 'package:tank_hunter/presentation/pages/losses_page.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'data/firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

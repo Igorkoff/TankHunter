@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
-import 'domain/report.dart';
-import 'data/database.dart';
+import '../../domain/report.dart';
+import '../../data/firebase.dart';
 
 // TODO: some feedback for user
 
