@@ -66,10 +66,15 @@ class _HomePageState extends State<HomePage> {
           MaterialButton(
             height: 220,
             padding: EdgeInsets.zero,
-            shape: Border.all(color: Colors.grey),
+            shape: image != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
             onPressed: () async {
               await pickImage(ImageSource.gallery);
-
+              if (context.mounted && image != null) {
+                FocusScope.of(context).requestFocus(commentFocusNode);
+              }
+            },
+            onLongPress: () async {
+              await pickImage(ImageSource.camera);
               if (context.mounted && image != null) {
                 FocusScope.of(context).requestFocus(commentFocusNode);
               }
