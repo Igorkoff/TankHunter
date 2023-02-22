@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:tank_hunter/presentation/pages/auth_page.dart';
 import 'package:tank_hunter/presentation/pages/home_page.dart';
 import 'package:tank_hunter/presentation/pages/losses_page.dart';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'data/firebase_options.dart';
+import 'package:tank_hunter/presentation/components/my_navigation_drawer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(TankHunter());
 }
 
 class TankHunter extends StatelessWidget {
   TankHunter({Key? key}) : super(key: key);
-
-  final Future<FirebaseApp> _fbApp = Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +23,8 @@ class TankHunter extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color.fromRGBO(255, 253, 250, 1),
       ),
-      home: FutureBuilder(
-        future: _fbApp,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             debugPrint('You Have an Error! ${snapshot.error.toString()}');
@@ -34,9 +32,7 @@ class TankHunter extends StatelessWidget {
           } else if (snapshot.hasData) {
             return const RootPage();
           } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const AuthPage();
           }
         },
       ),
@@ -60,6 +56,7 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const MyNavigationDrawer(),
       appBar: AppBar(
         title: const Text('Tank Hunter'),
         backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
@@ -70,7 +67,7 @@ class _RootPageState extends State<RootPage> {
         backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.add_a_photo, color: Colors.white), label: 'Report'),
-          NavigationDestination(icon: Icon(Icons.person_off, color: Colors.white), label: 'Profile'),
+          NavigationDestination(icon: Icon(Icons.person_off, color: Colors.white), label: 'Losses'),
         ],
         onDestinationSelected: (int index) {
           setState(() {
