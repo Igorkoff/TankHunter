@@ -21,9 +21,9 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _passwordFocusNode = FocusNode();
 
-  // TODO: validation for incorrect email or password
-
   Future signIn() async {
+    String errorMessage = 'Error: Unknown Error.';
+
     showDialog(
         context: context,
         builder: (context) {
@@ -37,14 +37,22 @@ class _LoginPageState extends State<LoginPage> {
       );
     } on FirebaseAuthException catch (exception) {
       debugPrint(exception.toString());
-      _emailController.clear();
-      _passwordController.clear();
-      FocusManager.instance.primaryFocus?.unfocus();
+
+      if (exception.code == 'user-not-found') {
+        errorMessage = 'Error: User Not Found.';
+        _emailController.clear();
+        _passwordController.clear();
+        FocusManager.instance.primaryFocus?.unfocus();
+      } else if (exception.code == 'wrong-password') {
+        errorMessage = 'Error: Incorrect Password.';
+        _passwordController.clear();
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-          content: Text('Error: Incorrect Email or Password.'),
+          duration: const Duration(seconds: 2),
+          content: Text(errorMessage),
         ),
       );
     }
