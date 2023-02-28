@@ -32,10 +32,11 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  firebase_core: ^2.3.0
-  firebase_auth: ^4.2.6
-  firebase_storage: ^11.0.6
-  cloud_firestore: ^4.1.0
+  firebase_core: ^2.7.0
+  firebase_auth: ^4.2.9
+  firebase_storage: ^11.0.14
+  cloud_firestore: ^4.4.3
+  path_provider: ^2.0.13
   image_picker: ^0.8.6
   geolocator: ^9.0.2
   keyboard_dismisser: ^3.0.0
@@ -45,6 +46,7 @@ dependencies:
   http: ^0.13.5
   form_validator: ^2.1.1
   flutter_fast_forms: ^9.0.0
+  google_mlkit_image_labeling: ^0.5.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +72,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/ml/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

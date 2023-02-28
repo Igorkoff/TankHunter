@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
+import '../../domain/classifier.dart';
 import '../../domain/report.dart';
 import '../../data/firebase.dart';
 
@@ -17,18 +18,30 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final commentFocusNode = FocusNode();
   final commentController = TextEditingController();
+  final commentFocusNode = FocusNode();
 
   CivilianPresence civilianPresence = CivilianPresence.unknown;
 
+  Classifier classifier = Classifier();
   Report report = Report();
+
+  String result = '';
   File? image;
 
   @override
   void initState() {
     super.initState();
+    classifier.create(assetPath: 'assets/ml/vertex.tflite');
     commentController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    classifier.dispose();
+    commentFocusNode.dispose();
+    commentController.dispose();
   }
 
   Future pickImage(ImageSource source) async {
@@ -37,7 +50,8 @@ class _HomePageState extends State<HomePage> {
     if (report.image != null) {
       await report.setCurrentLocation();
       report.setCurrentDateTime();
-
+      result = await classifier.classify(report.image!);
+      debugPrint(result);
       setState(() => image = report.image);
     } else {
       debugPrint('Image Not Selected');
@@ -55,9 +69,9 @@ class _HomePageState extends State<HomePage> {
       child: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          Center(
+          const Center(
             child: Column(
-              children: const [
+              children: [
                 Text('Report the Enemy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 SizedBox(height: 24),
               ],
