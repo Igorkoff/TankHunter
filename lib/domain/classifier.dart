@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:path/path.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
@@ -10,7 +9,7 @@ class Classifier {
 
   late ImageLabeler _imageLabeler;
 
-  create({assetPath, maxCount = 10, confidenceThreshold = 0.5}) async {
+  create({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) async {
     final modelPath = await _getModel(assetPath);
     final options = LocalLabelerOptions(
       modelPath: modelPath,
@@ -34,18 +33,38 @@ class Classifier {
     return file.path;
   }
 
-  Future<String> classify(File file) async {
-    String result = "";
+  Future<Map> classify(File file) async {
+    Map<String, double> classifiedObjects = {};
+
     final inputImage = InputImage.fromFile(file);
     final List<ImageLabel> labels = await _imageLabeler.processImage(inputImage);
+
     for (ImageLabel label in labels) {
-      final String text = label.label;
-      final int index = label.index;
-      final double confidence = label.confidence;
-      result += "$text – ${confidence.toStringAsFixed(2)}";
+      num confidence = num.parse(label.confidence.toStringAsFixed(2));
+      classifiedObjects[label.label] = confidence.toDouble();
     }
 
-    return result;
+    // return empty collection if did not pass validation
+
+    _validate(classifiedObjects);
+    return classifiedObjects;
+  }
+
+  _validate(Map<String, double> objects) {
+    if (objects.length == 1) {
+      // if the only label is 'Other' or the only label is an AFV, but confidence score is below 40%
+      if (objects.containsKey('Other') || objects.values.every((confidence) => confidence < 0.40)) {
+        objects.clear();
+      }
+    } else if (objects.length > 1) {
+      // if 'Other' has most confidence
+      if (objects.keys.first == 'Other') {
+        // if confidence score difference between 'Other' and AFV is more than 5%
+        if (objects.values.elementAt(0) - objects.values.elementAt(1) > 0.05) {
+          objects.clear();
+        }
+      }
+    }
   }
 
   dispose() {

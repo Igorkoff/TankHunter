@@ -28,6 +28,7 @@ class Database {
       'image': imageURL,
       'comment': report.userComment!,
       'civilians': report.civilianPresence!,
+      'vehicles': report.vehiclesDetected!,
       'location': GeoPoint(report.currentLocation!.latitude, report.currentLocation!.longitude),
       'heading': report.currentLocation!.heading,
       'time': report.currentDateTime!,

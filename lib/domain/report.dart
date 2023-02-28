@@ -12,6 +12,7 @@ class Report {
     required this.image,
     required this.userComment,
     required this.civilianPresence,
+    required this.vehiclesDetected,
     required this.currentLocation,
     required this.currentDateTime,
   });
@@ -21,9 +22,8 @@ class Report {
   String? civilianPresence;
   Position? currentLocation;
   DateTime? currentDateTime;
+  Map? vehiclesDetected;
   bool isVerified = false;
-
-  // TODO: implement dictionary of objects returned from object detector
 
   setImage(ImageSource source) async {
     try {
@@ -52,6 +52,10 @@ class Report {
         civilianPresence = 'Unknown';
         break;
     }
+  }
+
+  setVehiclesDetected(Map value) {
+    vehiclesDetected = value;
   }
 
   setCurrentLocation() async {
@@ -91,5 +95,6 @@ class Report {
     civilianPresence = null;
     currentLocation = null;
     currentDateTime = null;
+    vehiclesDetected = null;
   }
 }

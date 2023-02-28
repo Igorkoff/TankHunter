@@ -21,18 +21,18 @@ class _HomePageState extends State<HomePage> {
   final commentController = TextEditingController();
   final commentFocusNode = FocusNode();
 
-  CivilianPresence civilianPresence = CivilianPresence.unknown;
-
   Classifier classifier = Classifier();
   Report report = Report();
 
-  String result = '';
+  CivilianPresence civilianPresence = CivilianPresence.unknown;
+
+  Map? vehiclesDetected;
   File? image;
 
   @override
   void initState() {
     super.initState();
-    classifier.create(assetPath: 'assets/ml/vertex.tflite');
+    classifier.create(assetPath: 'assets/ml/vertex.tflite', confidenceThreshold: 0.20, maxCount: 3);
     commentController.addListener(() => setState(() {}));
   }
 
@@ -48,10 +48,16 @@ class _HomePageState extends State<HomePage> {
     await report.setImage(source);
 
     if (report.image != null) {
-      await report.setCurrentLocation();
-      report.setCurrentDateTime();
-      result = await classifier.classify(report.image!);
-      debugPrint(result);
+      vehiclesDetected = await classifier.classify(report.image!);
+
+      if (vehiclesDetected!.isEmpty) {
+        // TODO: prompt user to take another photo
+      } else {
+        report.setVehiclesDetected(vehiclesDetected!);
+        await report.setCurrentLocation();
+        await report.setCurrentDateTime();
+      }
+      debugPrint(vehiclesDetected.toString());
       setState(() => image = report.image);
     } else {
       debugPrint('Image Not Selected');
