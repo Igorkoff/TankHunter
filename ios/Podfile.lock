@@ -12,6 +12,9 @@ PODS:
   - Firebase/Firestore (10.1.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 10.1.0)
+  - Firebase/MLModelDownloader (10.1.0):
+    - Firebase/CoreOnly
+    - FirebaseMLModelDownloader (~> 10.1.0-beta)
   - Firebase/Storage (10.1.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.1.0)
@@ -21,6 +24,10 @@ PODS:
     - Flutter
   - firebase_core (2.7.0):
     - Firebase/CoreOnly (= 10.1.0)
+    - Flutter
+  - firebase_ml_model_downloader (0.2.0-11):
+    - Firebase/MLModelDownloader (= 10.1.0)
+    - firebase_core
     - Flutter
   - firebase_storage (11.0.14):
     - Firebase/Storage (= 10.1.0)
@@ -49,6 +56,17 @@ PODS:
   - FirebaseFirestore/Base (10.1.0)
   - FirebaseFirestore/WithLeveldb (10.1.0):
     - FirebaseFirestore/Base
+  - FirebaseInstallations (10.5.0):
+    - FirebaseCore (~> 10.0)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GoogleUtilities/UserDefaults (~> 7.8)
+    - PromisesObjC (~> 2.1)
+  - FirebaseMLModelDownloader (10.1.0-beta):
+    - FirebaseCore (~> 10.0)
+    - FirebaseInstallations (~> 10.0)
+    - GoogleDataTransport (~> 9.2)
+    - GoogleUtilities/Logger (~> 7.8)
+    - SwiftProtobuf (~> 1.19)
   - FirebaseStorage (10.1.0):
     - FirebaseAppCheckInterop (~> 10.0)
     - FirebaseAuthInterop (~> 10.0)
@@ -160,11 +178,13 @@ PODS:
     - FlutterMacOS
   - PromisesObjC (2.2.0)
   - Protobuf (3.22.0)
+  - SwiftProtobuf (1.21.0)
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_ml_model_downloader (from `.symlinks/plugins/firebase_ml_model_downloader/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, tag `10.1.0`)
   - Flutter (from `Flutter`)
@@ -185,6 +205,8 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreExtension
     - FirebaseCoreInternal
+    - FirebaseInstallations
+    - FirebaseMLModelDownloader
     - FirebaseStorage
     - GoogleDataTransport
     - GoogleMLKit
@@ -201,6 +223,7 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - Protobuf
+    - SwiftProtobuf
 
 EXTERNAL SOURCES:
   cloud_firestore:
@@ -209,6 +232,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_ml_model_downloader:
+    :path: ".symlinks/plugins/firebase_ml_model_downloader/ios"
   firebase_storage:
     :path: ".symlinks/plugins/firebase_storage/ios"
   FirebaseFirestore:
@@ -241,6 +266,7 @@ SPEC CHECKSUMS:
   Firebase: 444b35a9c568a516666213c2f6cccd10cb12559f
   firebase_auth: 6cedc566c8dc95f6a3571a514d1573154d713fa6
   firebase_core: 80f14115da19edf83c58202f86d4a5da9044149b
+  firebase_ml_model_downloader: 505078347c9a1635e282db09fbfa0a96f022ab33
   firebase_storage: 6335dd0f863bfa4f7f1682a1bfca97a77dca5b69
   FirebaseAppCheckInterop: 95bc238f8755d597cad95815b3c448f8617f720f
   FirebaseAuth: 19a85b8a42e7c1104a2ffa6987c748daa79a5e64
@@ -249,6 +275,8 @@ SPEC CHECKSUMS:
   FirebaseCoreExtension: d9fa427f1ae1edccf2368ce5e8d567e4c1f0ebc8
   FirebaseCoreInternal: e463f41bb935cd049505bf7e9a5bdd7dcea90df6
   FirebaseFirestore: 741ba791488b46b4b84425fe3981e51598aabce7
+  FirebaseInstallations: 935bc4abb6f7a035cab7a0c31cb777b2be3dd254
+  FirebaseMLModelDownloader: 1f735d5fe04bf7b1a4f9afe0ffdb7bfe1785062f
   FirebaseStorage: 132c10c4d2f8ed8afbfa918eb35d19a87f383d59
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
@@ -273,6 +301,7 @@ SPEC CHECKSUMS:
   path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   Protobuf: 5e6cbc143d02fe08585d86b0098f8b755d2caaab
+  SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
 PODFILE CHECKSUM: 5ea81787191d616d143eecbc85e50bce1677a1c5
 

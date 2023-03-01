@@ -9,7 +9,16 @@ class Classifier {
 
   late ImageLabeler _imageLabeler;
 
-  create({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) async {
+  createFromFirebase({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) {
+    final options = LocalLabelerOptions(
+      modelPath: assetPath,
+      maxCount: maxCount,
+      confidenceThreshold: confidenceThreshold,
+    );
+    _imageLabeler = ImageLabeler(options: options);
+  }
+
+  createFromLocal({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) async {
     final modelPath = await _getModel(assetPath);
     final options = LocalLabelerOptions(
       modelPath: modelPath,

@@ -3,12 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
 
 import '../../domain/classifier.dart';
 import '../../domain/report.dart';
 import '../../data/firebase.dart';
-
-// TODO: some feedback for user
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,6 +20,9 @@ class _HomePageState extends State<HomePage> {
   final commentController = TextEditingController();
   final commentFocusNode = FocusNode();
 
+  FirebaseCustomModel? model;
+  String modelName = 'Tank-Classifier'; // 'assets/ml/vertex.tflite'
+
   Classifier classifier = Classifier();
   Report report = Report();
 
@@ -30,13 +32,14 @@ class _HomePageState extends State<HomePage> {
   File? previewImage;
 
   bool isImageValidated = false;
+  bool canProcess = false;
 
   @override
   void initState() {
     super.initState();
+    initWithLocalModel();
 
     commentController.addListener(() => setState(() {}));
-    classifier.create(assetPath: 'assets/ml/vertex.tflite', confidenceThreshold: 0.20, maxCount: 3);
   }
 
   @override
@@ -45,6 +48,15 @@ class _HomePageState extends State<HomePage> {
     classifier.dispose();
     commentFocusNode.dispose();
     commentController.dispose();
+  }
+
+  initWithLocalModel() async {
+    model = await FirebaseModelDownloader.instance
+        .getModel(modelName, FirebaseModelDownloadType.localModelUpdateInBackground);
+
+    classifier.createFromFirebase(assetPath: model?.file.path, confidenceThreshold: 0.20, maxCount: 3);
+    canProcess = true;
+    setState(() {});
   }
 
   Future pickImage(ImageSource source) async {
@@ -99,22 +111,32 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.zero,
             shape: previewImage != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
             onPressed: () async {
-              await pickImage(ImageSource.gallery);
+              if (canProcess) {
+                await pickImage(ImageSource.gallery);
+              } else {
+                debugPrint('An Error with Firebase Model');
+              }
             },
             onLongPress: () async {
-              await pickImage(ImageSource.camera);
+              if (canProcess) {
+                await pickImage(ImageSource.camera);
+              } else {
+                debugPrint('An Error with Firebase Model');
+              }
             },
             child: previewImage != null
                 ? Image.file(previewImage!, fit: BoxFit.cover)
-                : const Column(
-                    children: [
-                      Icon(Icons.camera_alt, size: 40),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text('Take a Photo'),
-                      ),
-                    ],
-                  ),
+                : canProcess
+                    ? const Column(
+                        children: [
+                          Icon(Icons.camera_alt, size: 40),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text('Take a Photo'),
+                          ),
+                        ],
+                      )
+                    : const CircularProgressIndicator(color: Colors.black87),
           ),
           const SizedBox(height: 24),
           buildComment(),

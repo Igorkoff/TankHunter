@@ -53,6 +53,7 @@ class _RootPageState extends State<RootPage> {
     const HomePage(),
     const LossesPage(),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
