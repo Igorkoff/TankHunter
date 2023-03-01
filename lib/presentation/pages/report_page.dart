@@ -27,13 +27,16 @@ class _HomePageState extends State<HomePage> {
   CivilianPresence civilianPresence = CivilianPresence.unknown;
 
   Map? vehiclesDetected;
-  File? image;
+  File? previewImage;
+
+  bool isImageValidated = false;
 
   @override
   void initState() {
     super.initState();
-    classifier.create(assetPath: 'assets/ml/vertex.tflite', confidenceThreshold: 0.20, maxCount: 3);
+
     commentController.addListener(() => setState(() {}));
+    classifier.create(assetPath: 'assets/ml/vertex.tflite', confidenceThreshold: 0.20, maxCount: 3);
   }
 
   @override
@@ -48,17 +51,25 @@ class _HomePageState extends State<HomePage> {
     await report.setImage(source);
 
     if (report.image != null) {
+      setState(() => previewImage = report.image);
       vehiclesDetected = await classifier.classify(report.image!);
 
       if (vehiclesDetected!.isEmpty) {
-        // TODO: prompt user to take another photo
+        isImageValidated = false;
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+            content: Text('Error: Military Vehicles not Found'),
+          ));
+        }
       } else {
+        isImageValidated = true;
+        debugPrint(vehiclesDetected.toString());
         report.setVehiclesDetected(vehiclesDetected!);
         await report.setCurrentLocation();
         await report.setCurrentDateTime();
       }
-      debugPrint(vehiclesDetected.toString());
-      setState(() => image = report.image);
     } else {
       debugPrint('Image Not Selected');
       return;
@@ -86,25 +97,23 @@ class _HomePageState extends State<HomePage> {
           MaterialButton(
             height: 220,
             padding: EdgeInsets.zero,
-            shape: image != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
+            shape: previewImage != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
             onPressed: () async {
               await pickImage(ImageSource.gallery);
-              if (context.mounted && image != null) {
-                FocusScope.of(context).requestFocus(commentFocusNode);
-              }
             },
             onLongPress: () async {
               await pickImage(ImageSource.camera);
-              if (context.mounted && image != null) {
-                FocusScope.of(context).requestFocus(commentFocusNode);
-              }
             },
-            child: image != null
-                ? Image.file(image!, fit: BoxFit.cover)
-                : const Icon(
-                    Icons.camera_alt,
-                    color: Colors.blue,
-                    size: 45,
+            child: previewImage != null
+                ? Image.file(previewImage!, fit: BoxFit.cover)
+                : const Column(
+                    children: [
+                      Icon(Icons.camera_alt, size: 40),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text('Take a Photo'),
+                      ),
+                    ],
                   ),
           ),
           const SizedBox(height: 24),
@@ -126,21 +135,34 @@ class _HomePageState extends State<HomePage> {
               title: 'Submit Report',
               icon: Icons.add_location,
               onClicked: () async {
-                if (image == null) {
+                if (previewImage == null) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     backgroundColor: Colors.red,
-                    duration: Duration(seconds: 1),
+                    duration: Duration(seconds: 3),
                     content: Text('Error: Upload an Image'),
                   ));
                   return;
+                } else if (!isImageValidated) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 3),
+                    content: Text('Error: Military Vehicles not Found'),
+                  ));
+                  return;
                 }
+
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return const Center(child: CircularProgressIndicator());
+                    });
 
                 report.setUserComment(commentController.text);
                 report.setCivilianPresence(civilianPresence);
                 await Database.uploadReport(report);
 
                 if (context.mounted) {
-                  FocusScope.of(context).requestFocus(FocusNode());
+                  Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       backgroundColor: Colors.green,
@@ -149,12 +171,12 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
 
-                  setState(() {
-                    report.reset();
-                    image = null;
-                    commentController.clear();
-                    civilianPresence = CivilianPresence.unknown;
-                  });
+                  previewImage = null; // remove the current preview image
+                  commentController.clear(); // remove any text from the comment input
+                  civilianPresence = CivilianPresence.unknown; // reset the civilian presence radio buttons
+
+                  report = Report();
+                  setState(() {});
                 }
               }),
           const SizedBox(height: 12),
@@ -191,6 +213,7 @@ class _HomePageState extends State<HomePage> {
       RadioListTile<CivilianPresence>(
         title: Text(title),
         value: value,
+        activeColor: Colors.black87,
         groupValue: civilianPresence,
         onChanged: (CivilianPresence? value) {
           setState(() {
@@ -206,6 +229,7 @@ class _HomePageState extends State<HomePage> {
   }) =>
       ElevatedButton(
         style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black87,
           minimumSize: const Size.fromHeight(56),
           textStyle: const TextStyle(fontSize: 18),
         ),
