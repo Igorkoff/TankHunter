@@ -83,7 +83,7 @@ class _RootPageState extends State<RootPage> {
   void destinationSelected(int index) {
     setState(() {
       _currentPage = index;
-      _pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+      _pageController.jumpToPage(index);
     });
   }
 
@@ -116,6 +116,7 @@ class _RootPageState extends State<RootPage> {
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
           child: GNav(
             gap: 10.0,
+            haptic: false,
             padding: const EdgeInsets.all(12.0),
             color: const Color.fromRGBO(255, 253, 250, 1),
             activeColor: const Color.fromRGBO(255, 253, 250, 1),
