@@ -48,11 +48,49 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
-  int currentPage = 0;
-  List<Widget> pages = [
+  int _currentPage = 0;
+
+  final List<Widget> _pages = [
     const HomePage(),
     const LossesPage(),
   ];
+
+  final List<Widget> _destinations = [
+    const NavigationDestination(icon: Icon(Icons.add_a_photo, color: Colors.white), label: 'Report'),
+    const NavigationDestination(icon: Icon(Icons.person_off, color: Colors.white), label: 'Losses'),
+  ];
+
+  final PageController _pageController = PageController(
+    initialPage: 0,
+    keepPage: true,
+  );
+
+  void pageChanged(int index) {
+    setState(() {
+      _currentPage = index;
+    });
+  }
+
+  void destinationSelected(int index) {
+    setState(() {
+      _currentPage = index;
+      _pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+    });
+  }
+
+  Widget buildPageView() {
+    return PageView(
+        onPageChanged: (index) {
+          pageChanged(index);
+        },
+        controller: _pageController,
+        children: _pages);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,20 +100,15 @@ class _RootPageState extends State<RootPage> {
         title: const Text('Tank Hunter'),
         backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
       ),
-      body: pages[currentPage],
+      body: buildPageView(),
       bottomNavigationBar: NavigationBar(
         labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.add_a_photo, color: Colors.white), label: 'Report'),
-          NavigationDestination(icon: Icon(Icons.person_off, color: Colors.white), label: 'Losses'),
-        ],
+        destinations: _destinations,
         onDestinationSelected: (int index) {
-          setState(() {
-            currentPage = index;
-          });
+          destinationSelected(index);
         },
-        selectedIndex: currentPage,
+        selectedIndex: _currentPage,
       ),
     );
   }
