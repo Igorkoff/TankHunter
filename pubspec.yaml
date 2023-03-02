@@ -42,6 +42,7 @@ dependencies:
   keyboard_dismisser: ^3.0.0
   flutter_svg: ^1.1.6
   google_fonts: ^4.0.3
+  google_nav_bar: ^5.0.6
   intl: ^0.17.0
   http: ^0.13.5
   path: any

@@ -6,14 +6,14 @@ import '../../domain/losses.dart';
 // TODO: cache data and query once a day
 // TODO: download icons and use them locally
 
-class LossesPage extends StatefulWidget {
-  const LossesPage({Key? key}) : super(key: key);
+class EnemyLossesPage extends StatefulWidget {
+  const EnemyLossesPage({Key? key}) : super(key: key);
 
   @override
-  State<LossesPage> createState() => _LossesPageState();
+  State<EnemyLossesPage> createState() => _EnemyLossesPageState();
 }
 
-class _LossesPageState extends State<LossesPage> {
+class _EnemyLossesPageState extends State<EnemyLossesPage> {
   late Future<Details> futureDetails;
 
   @override
@@ -127,9 +127,9 @@ class _LossesPageState extends State<LossesPage> {
                 subtitle: 'ATGM and SRBM',
                 imageURL: 'https://russianwarship.rip/images/icons/icon-trk.svg',
               ),
-              Center(
+              const Center(
                 child: Column(
-                  children: const [
+                  children: [
                     SizedBox(height: 8),
                     Text('Glory To Ukraine!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))
                   ],

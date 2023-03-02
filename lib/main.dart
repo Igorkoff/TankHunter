@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+
 import 'package:tank_hunter/presentation/pages/auth_page.dart';
+import 'package:tank_hunter/presentation/pages/user_awards_page.dart';
+import 'package:tank_hunter/presentation/pages/pending_reports_page.dart';
 import 'package:tank_hunter/presentation/pages/report_page.dart';
-import 'package:tank_hunter/presentation/pages/losses_page.dart';
+import 'package:tank_hunter/presentation/pages/enemy_losses_page.dart';
+
 import 'package:tank_hunter/presentation/components/my_navigation_drawer.dart';
 
 Future<void> main() async {
@@ -51,13 +56,17 @@ class _RootPageState extends State<RootPage> {
   int _currentPage = 0;
 
   final List<Widget> _pages = [
-    const HomePage(),
-    const LossesPage(),
+    const ReportPage(),
+    const PendingReportsPage(),
+    const UserAwardsPage(),
+    const EnemyLossesPage(),
   ];
 
-  final List<Widget> _destinations = [
-    const NavigationDestination(icon: Icon(Icons.add_a_photo, color: Colors.white), label: 'Report'),
-    const NavigationDestination(icon: Icon(Icons.person_off, color: Colors.white), label: 'Losses'),
+  final List<GButton> _destinations = [
+    const GButton(icon: Icons.camera_alt, text: 'Report'),
+    const GButton(icon: Icons.drive_file_move, text: 'Pending'),
+    const GButton(icon: Icons.folder_special, text: 'Awards'),
+    const GButton(icon: Icons.person_off, text: 'Losses'),
   ];
 
   final PageController _pageController = PageController(
@@ -101,14 +110,24 @@ class _RootPageState extends State<RootPage> {
         backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
       ),
       body: buildPageView(),
-      bottomNavigationBar: NavigationBar(
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-        backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
-        destinations: _destinations,
-        onDestinationSelected: (int index) {
-          destinationSelected(index);
-        },
-        selectedIndex: _currentPage,
+      bottomNavigationBar: Container(
+        color: const Color.fromRGBO(32, 42, 68, 1),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
+          child: GNav(
+            gap: 10.0,
+            padding: const EdgeInsets.all(12.0),
+            color: const Color.fromRGBO(255, 253, 250, 1),
+            activeColor: const Color.fromRGBO(255, 253, 250, 1),
+            backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
+            tabBackgroundColor: const Color.fromRGBO(85, 98, 131, 1),
+            tabs: _destinations,
+            selectedIndex: _currentPage,
+            onTabChange: (int index) {
+              destinationSelected(index);
+            },
+          ),
+        ),
       ),
     );
   }

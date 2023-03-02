@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     String errorMessage = 'Error: Unknown Error.';
 
     showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return const Center(child: CircularProgressIndicator());

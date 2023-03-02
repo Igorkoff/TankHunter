@@ -9,14 +9,14 @@ import '../../domain/classifier.dart';
 import '../../domain/report.dart';
 import '../../data/firebase.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class ReportPage extends StatefulWidget {
+  const ReportPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ReportPage> createState() => _ReportPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _ReportPageState extends State<ReportPage> {
   final commentController = TextEditingController();
   final commentFocusNode = FocusNode();
 
@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                 : canProcess
                     ? const Column(
                         children: [
-                          Icon(Icons.camera_alt, size: 40),
+                          Icon(Icons.add_a_photo, size: 40),
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Text('Take a Photo'),
@@ -174,6 +174,7 @@ class _HomePageState extends State<HomePage> {
                 }
 
                 showDialog(
+                    barrierDismissible: false,
                     context: context,
                     builder: (context) {
                       return const Center(child: CircularProgressIndicator());
