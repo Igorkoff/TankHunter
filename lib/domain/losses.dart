@@ -1,13 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
+import 'package:dio/dio.dart';
+import 'package:dio_http_cache/dio_http_cache.dart';
 
-import 'package:http/http.dart' as http;
+Future<Details> fetchDetails(Dio dio) async {
+  dio.interceptors.add(DioCacheManager(CacheConfig(baseUrl: 'https://russianwarship.rip')).interceptor);
+  String url = 'https://russianwarship.rip/api/v1/statistics/latest';
 
-Future<Details> fetchDetails() async {
-  final response = await http.get(Uri.parse('https://russianwarship.rip/api/v1/statistics/latest'));
+  Response response =
+      await dio.get(url, options: buildCacheOptions(const Duration(hours: 24), maxStale: const Duration(hours: 48)));
 
   if (response.statusCode == 200) {
-    return Details.fromJson(jsonDecode(response.body));
+    return Details.fromJson(response.data);
   } else {
     throw Exception('Failed to Load Details');
   }
