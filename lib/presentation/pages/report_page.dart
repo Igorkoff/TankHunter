@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
+import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 
 import '../../domain/classifier.dart';
 import '../../domain/report.dart';
@@ -31,6 +32,7 @@ class _ReportPageState extends State<ReportPage> {
   Map? vehiclesDetected;
   File? previewImage;
 
+  bool isInternetAvailable = false;
   bool isImageValidated = false;
   bool canProcess = false;
 
@@ -69,11 +71,8 @@ class _ReportPageState extends State<ReportPage> {
       if (vehiclesDetected!.isEmpty) {
         isImageValidated = false;
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-            content: Text('Error: Military Vehicles not Found'),
-          ));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(buildSnackBar(messageText: 'Error: Military Vehicles not Found', isError: true));
         }
       } else {
         isImageValidated = true;
@@ -90,123 +89,136 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardDismisser(
-      gestures: const [
-        GestureType.onTap,
-        GestureType.onVerticalDragDown,
-      ],
-      child: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          const Center(
-            child: Column(
-              children: [
-                Text('Report the Enemy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                SizedBox(height: 24),
-              ],
-            ),
-          ),
-          MaterialButton(
-            height: 220,
-            padding: EdgeInsets.zero,
-            shape: previewImage != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
-            onPressed: () async {
-              if (canProcess) {
-                await pickImage(ImageSource.gallery);
-              } else {
-                debugPrint('An Error with Firebase Model');
-              }
-            },
-            onLongPress: () async {
-              if (canProcess) {
-                await pickImage(ImageSource.camera);
-              } else {
-                debugPrint('An Error with Firebase Model');
-              }
-            },
-            child: previewImage != null
-                ? Image.file(previewImage!, fit: BoxFit.cover)
-                : canProcess
-                    ? const Column(
-                        children: [
-                          Icon(Icons.add_a_photo, size: 40),
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text('Take a Photo'),
-                          ),
-                        ],
-                      )
-                    : const CircularProgressIndicator(color: Colors.black87),
-          ),
-          const SizedBox(height: 24),
-          buildComment(),
-          const SizedBox(height: 24),
-          const Text(
-            'Civilian Presence in the Area?',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-          buildRadioButton(title: 'Yes, there are some civilians.', value: CivilianPresence.yes),
-          buildRadioButton(title: 'No, there are no civilians.', value: CivilianPresence.no),
-          buildRadioButton(title: 'I don\'t know.', value: CivilianPresence.unknown),
-          const SizedBox(height: 12),
-          buildButton(
-              title: 'Submit Report',
-              icon: Icons.add_location,
-              onClicked: () async {
-                if (previewImage == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 3),
-                    content: Text('Error: Upload an Image'),
-                  ));
-                  return;
-                } else if (!isImageValidated) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 3),
-                    content: Text('Error: Military Vehicles not Found'),
-                  ));
-                  return;
-                }
-
-                showDialog(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (context) {
-                      return const Center(child: CircularProgressIndicator());
-                    });
-
-                report.setUserComment(commentController.text);
-                report.setCivilianPresence(civilianPresence);
-                await Database.uploadReport(report);
-
-                if (context.mounted) {
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 1),
-                      content: Text('Thank You for Your Service!'),
-                    ),
-                  );
-
-                  previewImage = null; // remove the current preview image
-                  commentController.clear(); // remove any text from the comment input
-                  civilianPresence = CivilianPresence.unknown; // reset the civilian presence radio buttons
-
-                  report = Report();
-                  setState(() {});
-                }
-              }),
-          const SizedBox(height: 12),
+    return InternetConnectivityListener(
+      connectivityListener: (BuildContext context, bool hasInternetAccess) {
+        if (hasInternetAccess) {
+          isInternetAvailable = true;
+        } else {
+          isInternetAvailable = false;
+        }
+      },
+      child: KeyboardDismisser(
+        gestures: const [
+          GestureType.onTap,
+          GestureType.onVerticalDragDown,
         ],
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            const Center(
+              child: Column(
+                children: [
+                  Text('Report the Enemy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 24),
+                ],
+              ),
+            ),
+            MaterialButton(
+              height: 220,
+              padding: EdgeInsets.zero,
+              shape: previewImage != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
+              onPressed: () async {
+                if (canProcess) {
+                  await pickImage(ImageSource.gallery);
+                } else {
+                  debugPrint('An Error with Firebase Model');
+                }
+              },
+              onLongPress: () async {
+                if (canProcess) {
+                  await pickImage(ImageSource.camera);
+                } else {
+                  debugPrint('An Error with Firebase Model');
+                }
+              },
+              child: previewImage != null
+                  ? Image.file(previewImage!, fit: BoxFit.cover)
+                  : canProcess
+                      ? const Column(
+                          children: [
+                            Icon(Icons.add_a_photo, size: 40),
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text('Take a Photo'),
+                            ),
+                          ],
+                        )
+                      : const CircularProgressIndicator(color: Colors.black87),
+            ),
+            const SizedBox(height: 24),
+            buildComment(),
+            const SizedBox(height: 24),
+            const Text(
+              'Civilian Presence in the Area?',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            buildRadioButton(title: 'Yes, there are some civilians.', value: CivilianPresence.yes),
+            buildRadioButton(title: 'No, there are no civilians.', value: CivilianPresence.no),
+            buildRadioButton(title: 'I don\'t know.', value: CivilianPresence.unknown),
+            const SizedBox(height: 12),
+            buildButton(
+                title: 'Submit Report',
+                icon: Icons.add_location,
+                onClicked: () async {
+                  if (previewImage == null) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(buildSnackBar(messageText: 'Error: Upload an Image', isError: true));
+                    return;
+                  } else if (!isImageValidated) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(buildSnackBar(messageText: 'Error: Military Vehicles not Found', isError: true));
+                    return;
+                  }
+
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return const Center(child: CircularProgressIndicator());
+                      });
+
+                  report.setUserComment(commentController.text);
+                  report.setCivilianPresence(civilianPresence);
+
+                  if (isInternetAvailable) {
+                    await Database.uploadReport(report);
+                  } else {
+                    debugPrint('you are kinda cringe ngl');
+                  }
+
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(buildSnackBar(messageText: 'Thank You for Your Service!', isError: false));
+
+                    previewImage = null; // remove the current preview image
+                    commentController.clear(); // remove any text from the comment input
+                    civilianPresence = CivilianPresence.unknown; // reset the civilian presence radio buttons
+
+                    report = Report();
+                    setState(() {});
+                  }
+                }),
+            const SizedBox(height: 12),
+          ],
+        ),
       ),
     );
   }
+
+  SnackBar buildSnackBar({
+    required String messageText,
+    required bool isError,
+  }) =>
+      SnackBar(
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: isError ? const Duration(seconds: 3) : const Duration(seconds: 1),
+        content: Text(messageText),
+      );
 
   Widget buildComment() => TextFormField(
         focusNode: commentFocusNode,
