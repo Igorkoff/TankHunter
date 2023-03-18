@@ -23,6 +23,12 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    dio.close();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<Details>(
       future: futureDetails,
@@ -138,6 +144,7 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
             ],
           );
         } else if (snapshot.hasError) {
+          debugPrint(snapshot.error.toString());
           return const Center(child: Text('Failed to Load Data'));
         }
         return const Center(

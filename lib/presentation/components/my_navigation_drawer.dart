@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tank_hunter/data/hive_database.dart';
 import 'package:tank_hunter/main.dart';
 import 'drawer_item.dart';
 
@@ -46,11 +47,12 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
     );
   }
 
-  void onItemPressed(BuildContext context, {required int index}) {
+  Future<void> onItemPressed(BuildContext context, {required int index}) async {
     Navigator.pop(context);
 
     switch (index) {
       case 2:
+        await HiveDatabase.deleteAllPendingReports();
         FirebaseAuth.instance.signOut();
         debugPrint('Signed Out');
         break;

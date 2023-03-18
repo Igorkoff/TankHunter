@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import '../domain/pending_report.dart';
 import '../domain/report.dart';
 
-class Database {
-  static Future<String> uploadImage(File image) async {
+class FirebaseDatabase {
+  static Future<String> _uploadImage(File image) async {
     final String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
 
     final Reference referenceRoot = FirebaseStorage.instance.ref();
@@ -21,18 +22,40 @@ class Database {
   }
 
   static Future uploadReport(Report report) async {
-    final imageURL = await uploadImage(report.image!);
+    final imageURL = await _uploadImage(report.image!);
     final CollectionReference collection = FirebaseFirestore.instance.collection('reports');
 
     Map<String, dynamic> dataToSend = {
       'image': imageURL,
-      'comment': report.userComment!,
-      'civilians': report.civilianPresence!,
-      'vehicles': report.vehiclesDetected!,
+      'user': report.userID,
+      'comment': report.userComment,
+      'civilians': report.civilianPresence,
+      'vehicles': report.vehiclesDetected,
       'location': GeoPoint(report.currentLocation!.latitude, report.currentLocation!.longitude),
-      'heading': report.currentLocation!.heading,
-      'time': report.currentDateTime!,
+      'time': report.currentDateTime,
       'verified': report.isVerified,
+    };
+
+    try {
+      collection.add(dataToSend).then((documentSnapshot) => debugPrint("Added Data with ID: ${documentSnapshot.id}"));
+    } catch (e) {
+      return Future.error('Failed to Upload Report to Firebase: $e');
+    }
+  }
+
+  static Future uploadPendingReport(PendingReport pendingReport) async {
+    final imageURL = await _uploadImage(File(pendingReport.imagePath));
+    final CollectionReference collection = FirebaseFirestore.instance.collection('reports');
+
+    Map<String, dynamic> dataToSend = {
+      'image': imageURL,
+      'user': pendingReport.userID,
+      'comment': pendingReport.userComment,
+      'civilians': pendingReport.civilianPresence,
+      'vehicles': pendingReport.vehiclesDetected,
+      'location': GeoPoint(pendingReport.locationLatitude, pendingReport.locationLongitude),
+      'time': pendingReport.currentDateTime,
+      'verified': pendingReport.isVerified,
     };
 
     try {

@@ -47,6 +47,9 @@ class _LoginPageState extends State<LoginPage> {
       } else if (exception.code == 'wrong-password') {
         errorMessage = 'Error: Incorrect Password.';
         _passwordController.clear();
+      } else if (exception.code == 'network-request-failed') {
+        errorMessage = 'Error: No Internet Connection.';
+        FocusManager.instance.primaryFocus?.unfocus();
       }
 
       ScaffoldMessenger.of(context).showSnackBar(

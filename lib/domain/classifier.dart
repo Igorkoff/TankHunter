@@ -5,11 +5,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 
 class Classifier {
-  Classifier();
+  static late ImageLabeler _imageLabeler;
 
-  late ImageLabeler _imageLabeler;
-
-  createFromFirebase({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) {
+  static createFromFirebase({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) {
     final options = LocalLabelerOptions(
       modelPath: assetPath,
       maxCount: maxCount,
@@ -18,7 +16,7 @@ class Classifier {
     _imageLabeler = ImageLabeler(options: options);
   }
 
-  createFromLocal({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) async {
+  static createFromLocal({required assetPath, maxCount = 10, confidenceThreshold = 0.5}) async {
     final modelPath = await _getModel(assetPath);
     final options = LocalLabelerOptions(
       modelPath: modelPath,
@@ -28,7 +26,7 @@ class Classifier {
     _imageLabeler = ImageLabeler(options: options);
   }
 
-  Future<String> _getModel(String assetPath) async {
+  static Future<String> _getModel(String assetPath) async {
     if (Platform.isAndroid) {
       return 'flutter_assets/$assetPath';
     }
@@ -42,7 +40,7 @@ class Classifier {
     return file.path;
   }
 
-  Future<Map> classify(File file) async {
+  static Future<Map> classify(File file) async {
     Map<String, double> classifiedObjects = {};
 
     final inputImage = InputImage.fromFile(file);
@@ -59,7 +57,7 @@ class Classifier {
     return classifiedObjects;
   }
 
-  _validate(Map<String, double> objects) {
+  static _validate(Map<String, double> objects) {
     if (objects.length == 1) {
       // if the only label is 'Other' or the only label is an AFV, but confidence score is below 40%
       if (objects.containsKey('Other') || objects.values.every((confidence) => confidence < 0.40)) {
@@ -76,7 +74,7 @@ class Classifier {
     }
   }
 
-  dispose() {
+  static dispose() {
     _imageLabeler.close();
   }
 }

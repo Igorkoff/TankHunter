@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
+//import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 Future<Details> fetchDetails(Dio dio) async {
-  dio.interceptors.add(DioCacheManager(CacheConfig(baseUrl: 'https://russianwarship.rip')).interceptor);
-  String url = 'https://russianwarship.rip/api/v1/statistics/latest';
-
-  Response response =
-      await dio.get(url, options: buildCacheOptions(const Duration(hours: 24), maxStale: const Duration(hours: 48)));
+  dio.interceptors.add(DioCacheInterceptor(
+      options: CacheOptions(
+    store: MemCacheStore(),
+    policy: CachePolicy.request,
+    priority: CachePriority.normal,
+    hitCacheOnErrorExcept: [],
+  )));
+  Response response = await dio.get('https://russianwarship.rip/api/v1/statistics/latest');
 
   if (response.statusCode == 200) {
     return Details.fromJson(response.data);

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 enum CivilianPresence { yes, no, unknown }
 
@@ -18,6 +19,7 @@ class Report {
   });
 
   File? image;
+  String? userID = FirebaseAuth.instance.currentUser!.uid;
   String? userComment;
   String? civilianPresence;
   Position? currentLocation;
@@ -34,6 +36,10 @@ class Report {
     } on PlatformException catch (e) {
       return Future.error('Failed to Pick Image: $e');
     }
+  }
+
+  setUserID(String value) {
+    userID = value;
   }
 
   setUserComment(String value) {
@@ -55,7 +61,9 @@ class Report {
   }
 
   setVehiclesDetected(Map value) {
-    vehiclesDetected = value;
+    if (value.isNotEmpty) {
+      vehiclesDetected = value;
+    }
   }
 
   setCurrentLocation() async {

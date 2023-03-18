@@ -2,18 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:tank_hunter/presentation/pages/auth_page.dart';
+import 'package:tank_hunter/presentation/pages/report_page.dart';
 import 'package:tank_hunter/presentation/pages/user_awards_page.dart';
 import 'package:tank_hunter/presentation/pages/pending_reports_page.dart';
-import 'package:tank_hunter/presentation/pages/report_page.dart';
 import 'package:tank_hunter/presentation/pages/enemy_losses_page.dart';
-
 import 'package:tank_hunter/presentation/components/my_navigation_drawer.dart';
+
+import 'domain/pending_report.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await Hive.initFlutter();
+  Hive.registerAdapter(PendingReportAdapter());
+  await Hive.openBox<PendingReport>('pending_reports');
   runApp(TankHunter());
 }
 
@@ -50,6 +55,10 @@ class RootPage extends StatefulWidget {
 
   @override
   State<RootPage> createState() => _RootPageState();
+
+  void dispose() {
+    Hive.box<PendingReport>('pending_reports').close();
+  }
 }
 
 class _RootPageState extends State<RootPage> {

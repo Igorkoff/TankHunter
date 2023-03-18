@@ -6,9 +6,11 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
 import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 
-import '../../domain/classifier.dart';
 import '../../domain/report.dart';
-import '../../data/firebase.dart';
+import '../../domain/utility.dart';
+import '../../domain/classifier.dart';
+import '../../data/hive_database.dart';
+import '../../data/firebase_database.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({Key? key}) : super(key: key);
@@ -21,69 +23,107 @@ class _ReportPageState extends State<ReportPage> {
   final commentController = TextEditingController();
   final commentFocusNode = FocusNode();
 
-  FirebaseCustomModel? model;
-  String modelName = 'Tank-Classifier'; // 'assets/ml/vertex.tflite'
+  FirebaseCustomModel? model; // object classification model
+  String modelName = 'Tank-Classifier'; // local: 'assets/ml/vertex.tflite'
 
-  Classifier classifier = Classifier();
-  Report report = Report();
+  Report report = Report(); // instance of report
 
-  CivilianPresence civilianPresence = CivilianPresence.unknown;
+  CivilianPresence civilianPresence = CivilianPresence.unknown; // default value for radio buttons
+  Map? vehiclesDetected; // dictionary of AFV detected in a photo
 
-  Map? vehiclesDetected;
-  File? previewImage;
-
-  bool isInternetAvailable = false;
-  bool isImageValidated = false;
-  bool canProcess = false;
+  bool isInternetAvailable = false; // check if internet connection is available
+  bool isImageValidated = false; // check if a user-taken photo has any AFV
+  bool canProcess = false; // check if Firebase model is downloaded
 
   @override
   void initState() {
     super.initState();
-    initWithLocalModel();
-
+    _initWithLocalModel();
     commentController.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
     super.dispose();
-    classifier.dispose();
+    Classifier.dispose();
     commentFocusNode.dispose();
     commentController.dispose();
   }
 
-  initWithLocalModel() async {
+  _initWithLocalModel() async {
     model = await FirebaseModelDownloader.instance
         .getModel(modelName, FirebaseModelDownloadType.localModelUpdateInBackground);
 
-    classifier.createFromFirebase(assetPath: model?.file.path, confidenceThreshold: 0.20, maxCount: 3);
+    Classifier.createFromFirebase(assetPath: model?.file.path, confidenceThreshold: 0.20, maxCount: 3);
     canProcess = true;
     setState(() {});
   }
 
-  Future pickImage(ImageSource source) async {
-    await report.setImage(source);
+  Future _processImage(ImageSource source) async {
+    await report.setImage(source); // pick image from camera or gallery and save it in report
 
     if (report.image != null) {
-      setState(() => previewImage = report.image);
-      vehiclesDetected = await classifier.classify(report.image!);
+      setState(() {}); // update UI, set a preview image
+      vehiclesDetected = await Classifier.classify(report.image!); // check for AFV presence
 
+      // if no AFV detected
       if (vehiclesDetected!.isEmpty) {
         isImageValidated = false;
         if (context.mounted) {
           ScaffoldMessenger.of(context)
               .showSnackBar(buildSnackBar(messageText: 'Error: Military Vehicles not Found', isError: true));
         }
+        // if at least a single AFV was detected
       } else {
         isImageValidated = true;
         debugPrint(vehiclesDetected.toString());
-        report.setVehiclesDetected(vehiclesDetected!);
-        await report.setCurrentLocation();
-        await report.setCurrentDateTime();
+        report.setVehiclesDetected(vehiclesDetected!); // save the map with AFV detected
+        await report.setCurrentLocation(); // set current location
+        await report.setCurrentDateTime(); // set current time
       }
     } else {
       debugPrint('Image Not Selected');
       return;
+    }
+  }
+
+  Future _submitReport() async {
+    if (report.image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(buildSnackBar(messageText: 'Error: Upload an Image', isError: true));
+      return;
+    } else if (!isImageValidated) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(buildSnackBar(messageText: 'Error: Military Vehicles not Found', isError: true));
+      return;
+    }
+
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return const Center(child: CircularProgressIndicator());
+        });
+
+    report.setUserComment(commentController.text);
+    report.setCivilianPresence(civilianPresence);
+
+    if (isInternetAvailable) {
+      await FirebaseDatabase.uploadReport(report);
+    } else {
+      File image = await Utility.saveImage(report.image!);
+      HiveDatabase.savePendingReport(report, image);
+    }
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(buildSnackBar(messageText: 'Thank You for Your Service!', isError: false));
+
+      commentController.clear(); // remove any text from the comment input
+      civilianPresence = CivilianPresence.unknown; // reset the civilian presence radio buttons
+
+      report = Report();
+      setState(() {});
     }
   }
 
@@ -116,23 +156,23 @@ class _ReportPageState extends State<ReportPage> {
             MaterialButton(
               height: 220,
               padding: EdgeInsets.zero,
-              shape: previewImage != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
+              shape: report.image != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
               onPressed: () async {
                 if (canProcess) {
-                  await pickImage(ImageSource.gallery);
+                  await _processImage(ImageSource.gallery);
                 } else {
                   debugPrint('An Error with Firebase Model');
                 }
               },
               onLongPress: () async {
                 if (canProcess) {
-                  await pickImage(ImageSource.camera);
+                  await _processImage(ImageSource.camera);
                 } else {
                   debugPrint('An Error with Firebase Model');
                 }
               },
-              child: previewImage != null
-                  ? Image.file(previewImage!, fit: BoxFit.cover)
+              child: report.image != null
+                  ? Image.file(report.image!, fit: BoxFit.cover, height: 250.0, width: 350.0)
                   : canProcess
                       ? const Column(
                           children: [
@@ -161,48 +201,10 @@ class _ReportPageState extends State<ReportPage> {
             buildRadioButton(title: 'I don\'t know.', value: CivilianPresence.unknown),
             const SizedBox(height: 12),
             buildButton(
-                title: 'Submit Report',
-                icon: Icons.add_location,
-                onClicked: () async {
-                  if (previewImage == null) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(buildSnackBar(messageText: 'Error: Upload an Image', isError: true));
-                    return;
-                  } else if (!isImageValidated) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(buildSnackBar(messageText: 'Error: Military Vehicles not Found', isError: true));
-                    return;
-                  }
-
-                  showDialog(
-                      barrierDismissible: false,
-                      context: context,
-                      builder: (context) {
-                        return const Center(child: CircularProgressIndicator());
-                      });
-
-                  report.setUserComment(commentController.text);
-                  report.setCivilianPresence(civilianPresence);
-
-                  if (isInternetAvailable) {
-                    await Database.uploadReport(report);
-                  } else {
-                    debugPrint('you are kinda cringe ngl');
-                  }
-
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(buildSnackBar(messageText: 'Thank You for Your Service!', isError: false));
-
-                    previewImage = null; // remove the current preview image
-                    commentController.clear(); // remove any text from the comment input
-                    civilianPresence = CivilianPresence.unknown; // reset the civilian presence radio buttons
-
-                    report = Report();
-                    setState(() {});
-                  }
-                }),
+              title: 'Submit Report',
+              icon: Icons.add_location,
+              onClicked: _submitReport,
+            ),
             const SizedBox(height: 12),
           ],
         ),

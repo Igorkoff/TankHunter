@@ -74,9 +74,6 @@ PODS:
     - FirebaseCoreExtension (~> 10.0)
     - GTMSessionFetcher/Core (~> 2.1)
   - Flutter (1.0.0)
-  - FMDB (2.7.5):
-    - FMDB/standard (= 2.7.5)
-  - FMDB/standard (2.7.5)
   - geolocator_apple (1.2.0):
     - Flutter
   - google_mlkit_commons (0.2.0):
@@ -181,9 +178,6 @@ PODS:
     - FlutterMacOS
   - PromisesObjC (2.2.0)
   - Protobuf (3.22.0)
-  - sqflite (0.0.2):
-    - Flutter
-    - FMDB (>= 2.7.5)
   - SwiftProtobuf (1.21.0)
 
 DEPENDENCIES:
@@ -201,7 +195,6 @@ DEPENDENCIES:
   - MLKitCommon (from `MLKitCommon.podspec.json`)
   - MLKitVision (from `MLKitVision.podspec.json`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - sqflite (from `.symlinks/plugins/sqflite/ios`)
 
 SPEC REPOS:
   trunk:
@@ -215,7 +208,6 @@ SPEC REPOS:
     - FirebaseInstallations
     - FirebaseMLModelDownloader
     - FirebaseStorage
-    - FMDB
     - GoogleDataTransport
     - GoogleMLKit
     - GoogleToolboxForMac
@@ -263,8 +255,6 @@ EXTERNAL SOURCES:
     :podspec: MLKitVision.podspec.json
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  sqflite:
-    :path: ".symlinks/plugins/sqflite/ios"
 
 CHECKOUT OPTIONS:
   FirebaseFirestore:
@@ -289,7 +279,6 @@ SPEC CHECKSUMS:
   FirebaseMLModelDownloader: 1f735d5fe04bf7b1a4f9afe0ffdb7bfe1785062f
   FirebaseStorage: 132c10c4d2f8ed8afbfa918eb35d19a87f383d59
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   google_mlkit_commons: e9070f57232c3a3e4bd42fdfa621bb1f4bb3e709
   google_mlkit_image_labeling: 800c55fc3f4505a122b875e34d9ff0b5ff3658bb
@@ -312,7 +301,6 @@ SPEC CHECKSUMS:
   path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   Protobuf: 5e6cbc143d02fe08585d86b0098f8b755d2caaab
-  sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
 PODFILE CHECKSUM: 5ea81787191d616d143eecbc85e50bce1677a1c5
