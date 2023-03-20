@@ -1,9 +1,8 @@
-import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../domain/losses.dart';
+import '../../domain/enemy_losses.dart';
 
 class EnemyLossesPage extends StatefulWidget {
   const EnemyLossesPage({Key? key}) : super(key: key);
@@ -13,25 +12,18 @@ class EnemyLossesPage extends StatefulWidget {
 }
 
 class _EnemyLossesPageState extends State<EnemyLossesPage> {
-  Future<Details>? futureDetails;
-  Dio dio = Dio();
+  Future<Details>? _futureDetails;
 
   @override
   void initState() {
     super.initState();
-    futureDetails = fetchDetails(dio);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    dio.close();
+    _futureDetails = EnemyLosses.fetchDetails();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Details>(
-      future: futureDetails,
+      future: _futureDetails,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           String currentDate = DateFormat("dd.MM.yyyy").format(DateTime.parse(snapshot.data!.data.date));
@@ -148,7 +140,6 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
             ],
           );
         } else if (snapshot.hasError) {
-          debugPrint(snapshot.error.toString());
           return const Center(child: Text('Failed to Load Data'));
         }
         return const Center(

@@ -12,6 +12,7 @@ import 'package:tank_hunter/presentation/pages/pending_reports_page.dart';
 import 'package:tank_hunter/presentation/pages/enemy_losses_page.dart';
 import 'package:tank_hunter/presentation/components/my_navigation_drawer.dart';
 
+import 'domain/enemy_losses.dart';
 import 'domain/pending_report.dart';
 
 Future<void> main() async {
@@ -70,6 +71,7 @@ class RootPage extends StatefulWidget {
 
   void dispose() {
     Hive.box<PendingReport>('pending_reports').close();
+    EnemyLosses.dio.close();
   }
 }
 

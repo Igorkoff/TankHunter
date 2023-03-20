@@ -1,22 +1,35 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-//import 'package:dio_http_cache/dio_http_cache.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 
-Future<Details> fetchDetails(Dio dio) async {
-  dio.interceptors.add(DioCacheInterceptor(
-      options: CacheOptions(
-    store: MemCacheStore(),
-    policy: CachePolicy.request,
-    priority: CachePriority.normal,
-    hitCacheOnErrorExcept: [],
-  )));
-  Response response = await dio.get('https://russianwarship.rip/api/v1/statistics/latest');
+class EnemyLosses {
+  static Dio dio = Dio();
 
-  if (response.statusCode == 200) {
-    return Details.fromJson(response.data);
-  } else {
-    throw Exception('Failed to Load Details');
+  static Future<Details> fetchDetails() async {
+    final cacheDir = await getTemporaryDirectory();
+    final cacheStore = HiveCacheStore(cacheDir.path, hiveBoxName: "losses_cache");
+
+    var cacheOptions = CacheOptions(
+      store: cacheStore,
+      policy: CachePolicy.forceCache,
+      priority: CachePriority.high,
+      maxStale: const Duration(hours: 24),
+      hitCacheOnErrorExcept: [401, 404],
+      keyBuilder: (request) {
+        return request.uri.toString();
+      },
+    );
+
+    dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
+    Response response = await dio.get('https://russianwarship.rip/api/v1/statistics/latest');
+
+    try {
+      return Details.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to Load Details');
+    }
   }
 }
 
