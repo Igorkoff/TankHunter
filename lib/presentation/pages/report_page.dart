@@ -154,7 +154,7 @@ class _ReportPageState extends State<ReportPage> {
               ),
             ),
             MaterialButton(
-              height: 220,
+              height: 250.0,
               padding: EdgeInsets.zero,
               shape: report.image != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
               onPressed: () async {

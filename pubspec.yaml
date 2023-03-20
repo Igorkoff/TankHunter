@@ -43,6 +43,7 @@ dependencies:
   flutter_svg: ^1.1.6
   google_fonts: ^4.0.3
   google_nav_bar: ^5.0.6
+  swipeable_tile: ^2.0.0+3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   intl: ^0.17.0
@@ -82,6 +83,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/google_fonts/
     - assets/images/
     - assets/icons/
     - assets/ml/

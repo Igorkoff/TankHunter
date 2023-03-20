@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:swipeable_tile/swipeable_tile.dart';
 import 'package:tank_hunter/data/hive_database.dart';
 import 'package:tank_hunter/data/firebase_database.dart';
 import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
@@ -17,9 +18,10 @@ class PendingReportsPage extends StatefulWidget {
 }
 
 class _PendingReportsPageState extends State<PendingReportsPage> {
-  late Box<PendingReport> _pendingReportsBox;
-  final StreamController _timerController = StreamController.broadcast();
-  bool isInternetAvailable = false; // check if internet connection is available
+  final int _hoursToExpire = 12; // how many hours user has to upload report
+  late bool _isInternetAvailable; // check if internet connection is available
+  late Box<PendingReport> _pendingReportsBox; // initialize the pending reports box
+  final StreamController _timerController = StreamController.broadcast(); // necessary for timer updating
 
   @override
   void initState() {
@@ -35,24 +37,22 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
     });
   }
 
-  @override
-  void dispose() {
-    //_timerController.close();
-    super.dispose();
-  }
-
   Future _removeExpiredReports() async {
-    final now = DateTime.now();
-    HiveDatabase.getAllPendingReports().forEach((pendingReport) async {
-      if (now.difference(pendingReport.currentDateTime).inHours >= 12) {
-        await HiveDatabase.deletePendingReport(pendingReport);
-      }
-    });
+    if (_pendingReportsBox.isNotEmpty) {
+      final now = DateTime.now();
+      final List<PendingReport> pendingReports = HiveDatabase.getAllPendingReports();
+      await Future.forEach(pendingReports, (pendingReport) async {
+        if (now.difference(pendingReport.currentDateTime).inHours >= _hoursToExpire) {
+          await HiveDatabase.deletePendingReport(pendingReport);
+        }
+      });
+    }
+    return;
   }
 
   Future _uploadPendingReports() async {
-    if (HiveDatabase.getPendingReportsBox().isNotEmpty) {
-      List<PendingReport> pendingReports = HiveDatabase.getAllPendingReports();
+    if (_pendingReportsBox.isNotEmpty) {
+      final List<PendingReport> pendingReports = HiveDatabase.getAllPendingReports();
       await Future.forEach(pendingReports, (pendingReport) async {
         await FirebaseDatabase.uploadPendingReport(pendingReport);
         await HiveDatabase.deletePendingReport(pendingReport);
@@ -63,98 +63,161 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio; // necessary for thumbnails
     return InternetConnectivityListener(
       connectivityListener: (BuildContext context, bool hasInternetAccess) {
         if (hasInternetAccess) {
-          isInternetAvailable = true;
+          _isInternetAvailable = true;
         } else {
-          isInternetAvailable = false;
+          _isInternetAvailable = false;
         }
       },
-      child: Center(
-        child: ValueListenableBuilder<Box>(
-          valueListenable: _pendingReportsBox.listenable(),
-          builder: (context, box, _) {
-            final pendingReports = HiveDatabase.getAllPendingReports();
-            if (pendingReports.isNotEmpty) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 24.0),
-                child: Column(
-                  children: [
-                    const Text('Pending Reports', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text('Pull to Upload'),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          if (isInternetAvailable) {
-                            await _uploadPendingReports();
-                            debugPrint('Uploaded');
-                          } else {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  _buildSnackBar(messageText: 'Error: No Internet Connection', isError: true));
-                            }
-                          }
-                        },
-                        child: ListView.separated(
-                          //padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-                          itemCount: pendingReports.length,
-                          itemBuilder: (context, index) {
-                            final pendingReport = pendingReports[index];
-                            final thumbnail = File(pendingReport.imagePath);
-
-                            final DateTime expirationDateTime =
-                                pendingReport.currentDateTime.add(const Duration(hours: 12));
-                            final Duration difference = expirationDateTime.difference(DateTime.now());
-                            return Dismissible(
-                              key: Key(pendingReport.key.toString()),
-                              onDismissed: (direction) async {
-                                await HiveDatabase.deletePendingReport(pendingReport);
-                              },
-                              background: _buildSwipeActionRight(),
-                              direction: DismissDirection.endToStart,
-                              dismissThresholds: const {DismissDirection.endToStart: 0.7},
-                              child: Card(
-                                margin: const EdgeInsets.all(0),
-                                elevation: 0,
-                                child: ListTile(
-                                  leading: Image.file(thumbnail, width: 80.0, height: 80.0, fit: BoxFit.cover),
-                                  title: Text('Report №${index + 1}'),
-                                  subtitle: Text(pendingReport.vehiclesDetected.keys.join(', ').replaceAll('_', '-')),
-                                  trailing: Text(
-                                      '${difference.inHours.toString().padLeft(2, "0")} : ${difference.inMinutes.remainder(60).toString().padLeft(2, "0")}'),
-                                  //tileColor: const Color.fromRGBO(85, 98, 131, 1),
-                                  //textColor: const Color.fromRGBO(255, 253, 250, 1),
-                                ),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (BuildContext context, int index) {
-                            return const Divider(thickness: 0.5);
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+      child: ValueListenableBuilder<Box>(
+        valueListenable: _pendingReportsBox.listenable(),
+        builder: (context, box, _) {
+          final pendingReports = HiveDatabase.getAllPendingReports();
+          if (pendingReports.isNotEmpty) {
+            return Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 30.0),
+                  child: Column(
+                    children: [
+                      Text('Pending Reports', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 8.0),
+                      Text('Pull to Upload', style: Theme.of(context).textTheme.titleSmall),
+                    ],
+                  ),
                 ),
-              );
-            } else {
-              return const Center(child: Text('No Pending Reports'));
-            }
-          },
-        ),
+                Expanded(
+                  child: RefreshIndicator(
+                    color: const Color(0xff0037C3),
+                    onRefresh: () async {
+                      if (_isInternetAvailable) {
+                        await _uploadPendingReports();
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              _buildSnackBar(messageText: 'Error: No Internet Connection', isError: true));
+                        }
+                      }
+                    },
+                    child: ListView.separated(
+                      padding: const EdgeInsets.only(bottom: 24.0),
+                      itemCount: pendingReports.length,
+                      itemBuilder: (context, index) {
+                        final pendingReport = pendingReports[index];
+                        return _SwipeableCard(
+                          index: index,
+                          pendingReport: pendingReport,
+                          hoursToExpire: _hoursToExpire,
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const SizedBox(height: 14.0);
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            return const Center(child: Text('No Pending Reports'));
+          }
+        },
       ),
     );
   }
 }
 
+class _SwipeableCard extends StatefulWidget {
+  const _SwipeableCard({
+    Key? key,
+    required this.pendingReport,
+    required this.hoursToExpire,
+    required this.index,
+  }) : super(key: key);
+
+  final PendingReport pendingReport;
+  final int hoursToExpire;
+  final int index;
+
+  @override
+  State<_SwipeableCard> createState() => _SwipeableCardState();
+}
+
+class _SwipeableCardState extends State<_SwipeableCard> {
+  @override
+  Widget build(BuildContext context) {
+    final thumbnail = File(widget.pendingReport.imagePath);
+    final String vehiclesDetected = widget.pendingReport.vehiclesDetected.keys.join(', ').replaceAll('_', '-');
+    final DateTime expirationDateTime = widget.pendingReport.currentDateTime.add(Duration(hours: widget.hoursToExpire));
+    final Duration timeBeforeExpiration = expirationDateTime.difference(DateTime.now());
+    final String timeBeforeExpirationInHours = timeBeforeExpiration.inHours.toString().padLeft(2, "0");
+    final String timeBeforeExpirationInMinutes =
+        timeBeforeExpiration.inMinutes.remainder(60).toString().padLeft(2, "0");
+    return SwipeableTile.card(
+      borderRadius: 16.0,
+      swipeThreshold: 0.4,
+      color: const Color(0xffE5EBFA),
+      key: Key(widget.pendingReport.key.toString()),
+      onSwiped: (direction) async {
+        await HiveDatabase.deletePendingReport(widget.pendingReport);
+      },
+      backgroundBuilder: (context, direction, progress) {
+        return _buildSwipeActionRight();
+      },
+      verticalPadding: 0,
+      horizontalPadding: 16,
+      shadow: BoxShadow(color: Colors.black.withOpacity(0.05)),
+      direction: SwipeDirection.endToStart,
+      child: Card(
+          color: const Color(0xffE5EBFA),
+          elevation: 0,
+          child: _buildListTile(
+            context: context,
+            index: widget.index,
+            thumbnail: thumbnail,
+            vehiclesDetected: vehiclesDetected,
+            timeBeforeExpirationInHours: timeBeforeExpirationInHours,
+            timeBeforeExpirationInMinutes: timeBeforeExpirationInMinutes,
+          )),
+    );
+  }
+}
+
+Widget _buildListTile({
+  required context,
+  required int index,
+  required File thumbnail,
+  required String vehiclesDetected,
+  required String timeBeforeExpirationInHours,
+  required String timeBeforeExpirationInMinutes,
+}) =>
+    ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.file(
+          thumbnail,
+          width: 90.0,
+          height: 55.0,
+          cacheWidth: (90 * MediaQuery.of(context).devicePixelRatio).round(),
+          fit: BoxFit.cover,
+        ),
+      ),
+      title: Text('Report ${(index + 1).toString().padLeft(2, "0")}'),
+      subtitle: Text(vehiclesDetected),
+      trailing: Text('$timeBeforeExpirationInHours : $timeBeforeExpirationInMinutes'),
+      titleTextStyle: Theme.of(context).textTheme.titleMedium,
+      subtitleTextStyle: Theme.of(context).textTheme.bodyMedium,
+    );
+
 Widget _buildSwipeActionRight() => Container(
       alignment: Alignment.centerRight,
-      padding: EdgeInsets.symmetric(horizontal: 20.0),
-      color: Colors.red,
-      child: Icon(Icons.delete, color: const Color.fromRGBO(255, 253, 250, 1)),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      decoration: const BoxDecoration(color: Colors.red),
+      child: const Icon(Icons.delete, color: Color.fromRGBO(255, 253, 250, 1)),
     );
 
 SnackBar _buildSnackBar({

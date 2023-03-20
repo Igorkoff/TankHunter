@@ -6,22 +6,20 @@ import '../domain/utility.dart';
 import '../domain/pending_report.dart';
 
 class HiveDatabase {
-  static final Box _pendingReportsBox = getPendingReportsBox();
-
   static Box<PendingReport> getPendingReportsBox() {
     return Hive.box<PendingReport>('pending_reports');
   }
 
   static List<PendingReport> getAllPendingReports() {
-    return _pendingReportsBox.values.toList().cast<PendingReport>();
+    return getPendingReportsBox().values.toList().cast<PendingReport>();
   }
 
-  static PendingReport getPendingReportByKey(key) {
-    return _pendingReportsBox.get(key);
+  static PendingReport? getPendingReportByKey(key) {
+    return getPendingReportsBox().get(key);
   }
 
-  static PendingReport getPendingReportByIndex(int index) {
-    return _pendingReportsBox.getAt(index);
+  static PendingReport? getPendingReportByIndex(int index) {
+    return getPendingReportsBox().getAt(index);
   }
 
   static savePendingReport(Report report, File image) {
@@ -37,7 +35,7 @@ class HiveDatabase {
       isVerified: report.isVerified,
     );
 
-    _pendingReportsBox.add(pendingReport);
+    getPendingReportsBox().add(pendingReport);
   }
 
   static deletePendingReport(PendingReport pendingReport) async {
@@ -46,8 +44,8 @@ class HiveDatabase {
   }
 
   static deleteAllPendingReports() async {
-    if (_pendingReportsBox.isNotEmpty) {
-      getAllPendingReports().forEach((pendingReport) async {
+    if (getPendingReportsBox().isNotEmpty) {
+      await Future.forEach(getAllPendingReports(), (pendingReport) async {
         await deletePendingReport(pendingReport);
       });
     }
