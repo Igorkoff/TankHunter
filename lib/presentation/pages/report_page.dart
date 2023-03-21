@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
@@ -50,13 +52,28 @@ class _ReportPageState extends State<ReportPage> {
     commentController.dispose();
   }
 
-  _initWithLocalModel() async {
+  Future _initWithLocalModel() async {
     model = await FirebaseModelDownloader.instance
         .getModel(modelName, FirebaseModelDownloadType.localModelUpdateInBackground);
 
     Classifier.createFromFirebase(assetPath: model?.file.path, confidenceThreshold: 0.20, maxCount: 3);
     canProcess = true;
     setState(() {});
+  }
+
+  Future _pickImage(ImageSource source) async {
+    bool isPermitGranted = await Utility.requestPermissions();
+    bool isServiceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (isPermitGranted && isServiceEnabled) {
+      if (canProcess) {
+        await _processImage(source);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(buildSnackBar(messageText: 'Error: Unknown Error', isError: true));
+        }
+      }
+    }
   }
 
   Future _processImage(ImageSource source) async {
@@ -158,17 +175,10 @@ class _ReportPageState extends State<ReportPage> {
               padding: EdgeInsets.zero,
               shape: report.image != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
               onPressed: () async {
-                if (canProcess) {
-                  await _processImage(ImageSource.gallery);
-                } else {
-                  debugPrint('An Error with Firebase Model');
-                }
-              },
-              onLongPress: () async {
-                if (canProcess) {
-                  await _processImage(ImageSource.camera);
-                } else {
-                  debugPrint('An Error with Firebase Model');
+                if (kDebugMode) {
+                  await _pickImage(ImageSource.gallery);
+                } else if (kReleaseMode) {
+                  await _pickImage(ImageSource.camera);
                 }
               },
               child: report.image != null

@@ -67,6 +67,7 @@ class Report {
   }
 
   setCurrentLocation() async {
+    /*
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
@@ -85,6 +86,7 @@ class Report {
     if (permission == LocationPermission.deniedForever) {
       return Future.error('Location Permissions are Permanently Denied.');
     }
+    */
 
     currentLocation = await Geolocator.getCurrentPosition();
   }

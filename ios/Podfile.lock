@@ -176,6 +176,8 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - permission_handler_apple (9.0.4):
+    - Flutter
   - PromisesObjC (2.2.0)
   - Protobuf (3.22.0)
   - SwiftProtobuf (1.21.0)
@@ -195,6 +197,7 @@ DEPENDENCIES:
   - MLKitCommon (from `MLKitCommon.podspec.json`)
   - MLKitVision (from `MLKitVision.podspec.json`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 SPEC REPOS:
   trunk:
@@ -255,6 +258,8 @@ EXTERNAL SOURCES:
     :podspec: MLKitVision.podspec.json
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 CHECKOUT OPTIONS:
   FirebaseFirestore:
@@ -299,10 +304,11 @@ SPEC CHECKSUMS:
   MLKitVisionKit: bd7f84af2da356322872182b1f5bdf66f68e4584
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
+  permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   Protobuf: 5e6cbc143d02fe08585d86b0098f8b755d2caaab
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
-PODFILE CHECKSUM: 5ea81787191d616d143eecbc85e50bce1677a1c5
+PODFILE CHECKSUM: 3897ff20ae46f0d6dfa65bffbf2fd29e60414cc6
 
 COCOAPODS: 1.11.3

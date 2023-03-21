@@ -13,10 +13,10 @@ class EnemyLosses {
 
     var cacheOptions = CacheOptions(
       store: cacheStore,
-      policy: CachePolicy.forceCache,
-      priority: CachePriority.high,
-      maxStale: const Duration(hours: 24),
-      hitCacheOnErrorExcept: [401, 404],
+      policy: CachePolicy.refreshForceCache,
+      priority: CachePriority.normal,
+      maxStale: const Duration(hours: 12),
+      hitCacheOnErrorExcept: [],
       keyBuilder: (request) {
         return request.uri.toString();
       },
