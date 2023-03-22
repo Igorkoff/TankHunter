@@ -19,3 +19,24 @@ Widget buildIconButton({
         ],
       ),
     );
+
+Widget buildAppBarButton({
+  required context,
+  required IconData icon,
+  required VoidCallback onClicked,
+}) =>
+    SizedBox(
+      width: 40,
+      height: 40,
+      child: FittedBox(
+        child: FloatingActionButton(
+          backgroundColor: const Color(0xff01113A),
+          elevation: 0.15,
+          onPressed: onClicked,
+          child: Icon(
+            icon,
+            color: const Color(0xffD6E1FE),
+          ),
+        ),
+      ),
+    );

@@ -9,6 +9,8 @@ import 'package:tank_hunter/data/firebase_database.dart';
 import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 
 import '../../domain/pending_report.dart';
+import '../components/app_bar.dart';
+import '../components/info_card.dart';
 
 class PendingReportsPage extends StatefulWidget {
   const PendingReportsPage({Key? key}) : super(key: key);
@@ -63,7 +65,6 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio; // necessary for thumbnails
     return InternetConnectivityListener(
       connectivityListener: (BuildContext context, bool hasInternetAccess) {
         if (hasInternetAccess) {
@@ -77,52 +78,55 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
         builder: (context, box, _) {
           final pendingReports = HiveDatabase.getAllPendingReports();
           if (pendingReports.isNotEmpty) {
+            return RefreshIndicator(
+              color: const Color(0xff0037C3),
+              onRefresh: () async {
+                if (_isInternetAvailable) {
+                  await _uploadPendingReports();
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(_buildSnackBar(messageText: 'Error: No Internet Connection', isError: true));
+                  }
+                }
+              },
+              child: ListView(
+                children: [
+                  buildAppBar(context: context, title: 'Pending Reports', subtitle: 'Pull to Upload'),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    padding: const EdgeInsets.only(bottom: 24.0),
+                    itemCount: pendingReports.length,
+                    itemBuilder: (context, index) {
+                      final pendingReport = pendingReports[index];
+                      return _SwipeableCard(
+                        index: index,
+                        pendingReport: pendingReport,
+                        hoursToExpire: _hoursToExpire,
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(height: 14.0);
+                    },
+                  ),
+                ],
+              ),
+            );
+          } else {
             return Column(
               children: [
+                buildAppBar(context: context, title: 'Pending Reports', subtitle: 'Nothing to Upload'),
                 Container(
-                  margin: const EdgeInsets.symmetric(vertical: 30.0),
-                  child: Column(
-                    children: [
-                      Text('Pending Reports', style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: 8.0),
-                      Text('Pull to Upload', style: Theme.of(context).textTheme.titleSmall),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: RefreshIndicator(
-                    color: const Color(0xff0037C3),
-                    onRefresh: () async {
-                      if (_isInternetAvailable) {
-                        await _uploadPendingReports();
-                      } else {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              _buildSnackBar(messageText: 'Error: No Internet Connection', isError: true));
-                        }
-                      }
-                    },
-                    child: ListView.separated(
-                      padding: const EdgeInsets.only(bottom: 24.0),
-                      itemCount: pendingReports.length,
-                      itemBuilder: (context, index) {
-                        final pendingReport = pendingReports[index];
-                        return _SwipeableCard(
-                          index: index,
-                          pendingReport: pendingReport,
-                          hoursToExpire: _hoursToExpire,
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return const SizedBox(height: 14.0);
-                      },
-                    ),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: buildInfoCard(
+                    context: context,
+                    icon: Icons.done,
+                    text: 'Thanks, you do not have any reports waiting to be uploaded.',
                   ),
                 ),
               ],
             );
-          } else {
-            return const Center(child: Text('No Pending Reports'));
           }
         },
       ),
