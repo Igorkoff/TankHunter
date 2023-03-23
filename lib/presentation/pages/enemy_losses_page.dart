@@ -36,7 +36,6 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
               ListView(
                 shrinkWrap: true,
                 physics: const ScrollPhysics(),
-                padding: const EdgeInsets.only(bottom: 24.0),
                 children: [
                   _buildListTile(
                     title: snapshot.data!.data.stats.personnel_units.toString(),
@@ -122,11 +121,11 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
                     subtitle: 'ATGM and SRBM',
                     imagePath: 'assets/icons/icon-trk.svg',
                   ),
-                  Column(
-                    children: [
-                      const SizedBox(height: 10.0),
-                      Text('Glory To Ukraine!  🇺🇦', style: Theme.of(context).textTheme.titleLarge)
-                    ],
+                  Center(
+                    child: Container(
+                      margin: EdgeInsets.only(top: 14.0, bottom: (MediaQuery.of(context).size.height * .18)),
+                      child: Text('Glory To Ukraine!  🇺🇦', style: Theme.of(context).textTheme.titleLarge),
+                    ),
                   )
                 ],
               ),
@@ -135,7 +134,7 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
         } else if (snapshot.hasError) {
           String currentDate = DateFormat('dd.MM.yyyy').format(DateTime.now());
           String currentDay = (DateTime.now().difference(DateTime(2022, 2, 24)).inDays + 1).toString();
-          return Column(
+          return ListView(
             children: [
               buildAppBar(context: context, title: 'Russian Losses', subtitle: '$currentDate, Day $currentDay'),
               Container(

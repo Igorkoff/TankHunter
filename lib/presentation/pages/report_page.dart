@@ -7,12 +7,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
 import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
+import 'package:tank_hunter/presentation/components/my_buttons.dart';
 
 import '../../domain/report.dart';
 import '../../domain/utility.dart';
 import '../../domain/classifier.dart';
 import '../../data/hive_database.dart';
 import '../../data/firebase_database.dart';
+import '../components/app_bar.dart';
+import '../components/snack_bar.dart';
 
 class ReportPage extends StatefulWidget {
   const ReportPage({Key? key}) : super(key: key);
@@ -118,7 +121,7 @@ class _ReportPageState extends State<ReportPage> {
         barrierDismissible: false,
         context: context,
         builder: (context) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: Color(0xff0037C3)));
         });
 
     report.setUserComment(commentController.text);
@@ -156,137 +159,152 @@ class _ReportPageState extends State<ReportPage> {
       },
       child: KeyboardDismisser(
         gestures: const [
-          GestureType.onTap,
           GestureType.onVerticalDragDown,
         ],
         child: ListView(
-          padding: const EdgeInsets.all(24),
           children: [
-            const Center(
-              child: Column(
-                children: [
-                  Text('Report the Enemy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 24),
-                ],
+            buildAppBar(context: context, title: 'Report the Enemy'),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildImagePicker(),
+            ),
+            const SizedBox(height: 40),
+            Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('Additional Information', style: Theme.of(context).textTheme.labelLarge)),
+            const SizedBox(height: 24),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildComment(),
+            ),
+            const SizedBox(height: 40),
+            Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('Civilian Presence in the Area?', style: Theme.of(context).textTheme.labelLarge)),
+            const SizedBox(height: 12),
+            Container(
+                margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: _buildRadioButton(title: 'Yes, there are some civilians.', value: CivilianPresence.yes)),
+            Container(
+                margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: _buildRadioButton(title: 'No, there are no civilians.', value: CivilianPresence.no)),
+            Container(
+                margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                child: _buildRadioButton(title: 'I don\'t know.', value: CivilianPresence.unknown)),
+            const SizedBox(height: 12),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: buildSubmitButton(
+                  context: context,
+                  title: 'Submit',
+                  onPressed: _submitReport,
+                ),
               ),
             ),
-            MaterialButton(
-              height: 250.0,
-              padding: EdgeInsets.zero,
-              shape: report.image != null ? const Border(top: BorderSide.none) : Border.all(color: Colors.grey),
-              onPressed: () async {
-                if (kDebugMode) {
-                  await _pickImage(ImageSource.gallery);
-                } else if (kReleaseMode) {
-                  await _pickImage(ImageSource.camera);
-                }
-              },
-              child: report.image != null
-                  ? Image.file(report.image!, fit: BoxFit.cover, height: 250.0, width: 350.0)
-                  : canProcess
-                      ? const Column(
-                          children: [
-                            Icon(Icons.add_a_photo, size: 40),
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text('Take a Photo'),
-                            ),
-                          ],
-                        )
-                      : const CircularProgressIndicator(color: Colors.black87),
-            ),
-            const SizedBox(height: 24),
-            buildComment(),
-            const SizedBox(height: 24),
-            const Text(
-              'Civilian Presence in the Area?',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            buildRadioButton(title: 'Yes, there are some civilians.', value: CivilianPresence.yes),
-            buildRadioButton(title: 'No, there are no civilians.', value: CivilianPresence.no),
-            buildRadioButton(title: 'I don\'t know.', value: CivilianPresence.unknown),
-            const SizedBox(height: 12),
-            buildButton(
-              title: 'Submit Report',
-              icon: Icons.add_location,
-              onClicked: _submitReport,
-            ),
-            const SizedBox(height: 12),
+            SizedBox(height: (MediaQuery.of(context).size.height * .18)),
           ],
         ),
       ),
     );
   }
 
-  SnackBar buildSnackBar({
-    required String messageText,
-    required bool isError,
-  }) =>
-      SnackBar(
-        backgroundColor: isError ? Colors.red : Colors.green,
-        duration: isError ? const Duration(seconds: 3) : const Duration(seconds: 1),
-        content: Text(messageText),
+  Widget _buildImagePicker() => Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 0.15,
+        child: Ink(
+          height: 225.0,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.0),
+            color: const Color(0xff99B9F5),
+          ),
+          child: InkWell(
+            onTap: () async {
+              if (kDebugMode) {
+                await _pickImage(ImageSource.gallery);
+              } else if (kReleaseMode) {
+                await _pickImage(ImageSource.camera);
+              }
+            },
+            onLongPress: () async {
+              await _pickImage(ImageSource.gallery);
+            },
+            child: report.image != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Image.file(
+                      report.image!,
+                      fit: BoxFit.cover,
+                      height: 225.0,
+                      width: MediaQuery.of(context).size.width,
+                    ),
+                  )
+                : canProcess
+                    ? const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(color: Color(0xffD6E1FE), Icons.add_a_photo, size: 45),
+                        ],
+                      )
+                    : const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(color: Color(0xffD6E1FE)),
+                        ],
+                      ),
+          ),
+        ),
       );
 
-  Widget buildComment() => TextFormField(
+  Widget _buildComment() => TextFormField(
         focusNode: commentFocusNode,
         controller: commentController,
-        minLines: 1,
-        maxLines: 4,
-        textAlign: TextAlign.justify,
+        maxLines: 1,
+        style: Theme.of(context).textTheme.bodyMedium,
         decoration: InputDecoration(
-          labelText: 'Comment (Optional)',
-          prefixIcon: const Icon(Icons.comment),
+          hintText: 'Share Details Here ...',
+          hintStyle: Theme.of(context).textTheme.bodyMedium,
+          border: OutlineInputBorder(
+              borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+          enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 21.5),
           suffixIcon: commentController.text.isEmpty
               ? Container(width: 0)
               : IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => commentController.clear(),
                 ),
-          border: const OutlineInputBorder(),
         ),
         keyboardType: TextInputType.multiline,
         textInputAction: TextInputAction.done,
       );
 
-  Widget buildRadioButton({
+  Widget _buildRadioButton({
     required String title,
     required CivilianPresence value,
   }) =>
       RadioListTile<CivilianPresence>(
-        title: Text(title),
+        contentPadding: EdgeInsets.zero,
+        title: Transform.translate(
+            offset: const Offset(-16, 0),
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.bodyLarge,
+            )),
         value: value,
-        activeColor: Colors.black87,
+        activeColor: const Color(0xff1D44A7),
         groupValue: civilianPresence,
         onChanged: (CivilianPresence? value) {
           setState(() {
             civilianPresence = value!;
           });
         },
-      );
-
-  Widget buildButton({
-    required String title,
-    required IconData icon,
-    required VoidCallback onClicked,
-  }) =>
-      ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black87,
-          minimumSize: const Size.fromHeight(56),
-          textStyle: const TextStyle(fontSize: 18),
-        ),
-        onPressed: onClicked,
-        child: Row(
-          children: [
-            Icon(icon, size: 28),
-            const SizedBox(width: 16),
-            Text(title),
-          ],
-        ),
       );
 }

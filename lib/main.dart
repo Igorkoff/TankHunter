@@ -1,9 +1,9 @@
+import 'package:dot_navigation_bar/dot_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:tank_hunter/presentation/pages/auth_page.dart';
@@ -43,9 +43,13 @@ class TankHunter extends StatelessWidget {
           titleMedium:
               GoogleFonts.montserrat(textStyle: textTheme.titleMedium, fontSize: 16.0, fontWeight: FontWeight.w500),
           titleSmall:
-              GoogleFonts.montserrat(textStyle: textTheme.titleSmall, fontSize: 14.0, fontWeight: FontWeight.w300),
+              GoogleFonts.montserrat(textStyle: textTheme.titleSmall, fontSize: 14.0, fontWeight: FontWeight.w500),
+          labelLarge:
+              GoogleFonts.montserrat(textStyle: textTheme.labelLarge, fontSize: 18.0, fontWeight: FontWeight.w500),
+          bodyLarge:
+              GoogleFonts.montserrat(textStyle: textTheme.bodyLarge, fontSize: 16.0, fontWeight: FontWeight.w300),
           bodyMedium:
-              GoogleFonts.montserrat(textStyle: textTheme.bodyMedium, fontSize: 14.0, fontWeight: FontWeight.w400),
+              GoogleFonts.montserrat(textStyle: textTheme.bodyMedium, fontSize: 14.0, fontWeight: FontWeight.w300),
         ),
       ),
       home: StreamBuilder<User?>(
@@ -87,11 +91,11 @@ class _RootPageState extends State<RootPage> {
     const EnemyLossesPage(),
   ];
 
-  final List<GButton> _destinations = [
-    const GButton(icon: Icons.camera_alt, text: 'Report'),
-    const GButton(icon: Icons.drive_file_move, text: 'Pending'),
-    const GButton(icon: Icons.folder_special, text: 'Awards'),
-    const GButton(icon: Icons.person_off, text: 'Losses'),
+  final List<DotNavigationBarItem> _destinations = [
+    DotNavigationBarItem(icon: const Icon(Icons.camera_alt_outlined)),
+    DotNavigationBarItem(icon: const Icon(Icons.drive_file_move_outlined)),
+    DotNavigationBarItem(icon: const Icon(Icons.folder_special_outlined)),
+    DotNavigationBarItem(icon: const Icon(Icons.person_off_outlined)),
   ];
 
   final PageController _pageController = PageController(
@@ -113,12 +117,20 @@ class _RootPageState extends State<RootPage> {
   }
 
   Widget buildPageView() {
-    return PageView(
-        onPageChanged: (index) {
-          pageChanged(index);
-        },
-        controller: _pageController,
-        children: _pages);
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: const Color(0xff01113A),
+      ),
+      child: SafeArea(
+        maintainBottomViewPadding: true,
+        child: PageView(
+            onPageChanged: (index) {
+              pageChanged(index);
+            },
+            controller: _pageController,
+            children: _pages),
+      ),
+    );
   }
 
   @override
@@ -128,34 +140,25 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        drawer: const MyNavigationDrawer(),
-        // appBar: AppBar(
-        //   title: const Text('Tank Hunter'),
-        //   backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
-        // ),
-        body: buildPageView(),
-        bottomNavigationBar: Container(
-          color: const Color.fromRGBO(32, 42, 68, 1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
-            child: GNav(
-              gap: 10.0,
-              haptic: false,
-              padding: const EdgeInsets.all(12.0),
-              color: const Color.fromRGBO(255, 253, 250, 1),
-              activeColor: const Color.fromRGBO(255, 253, 250, 1),
-              backgroundColor: const Color.fromRGBO(32, 42, 68, 1),
-              tabBackgroundColor: const Color.fromRGBO(85, 98, 131, 1),
-              tabs: _destinations,
-              selectedIndex: _currentPage,
-              onTabChange: (int index) {
-                destinationSelected(index);
-              },
-            ),
-          ),
-        ),
+    return Scaffold(
+      extendBody: true,
+      body: buildPageView(),
+      drawer: const MyNavigationDrawer(),
+      bottomNavigationBar: DotNavigationBar(
+        borderRadius: 40,
+        enablePaddingAnimation: false,
+        backgroundColor: const Color(0xff01113A),
+        selectedItemColor: const Color(0xffF5DB53),
+        unselectedItemColor: const Color(0xffD6E1FE),
+        paddingR: const EdgeInsets.fromLTRB(22.0, 20.0, 22.0, 10.0),
+        marginR: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        itemPadding: const EdgeInsets.symmetric(vertical: 2.5, horizontal: 16.0),
+        boxShadow: const [BoxShadow(color: Color.fromRGBO(25, 44, 94, 0.4), offset: Offset(0, 4), blurRadius: 15.0)],
+        items: _destinations,
+        currentIndex: _currentPage,
+        onTap: (int index) {
+          destinationSelected(index);
+        },
       ),
     );
   }

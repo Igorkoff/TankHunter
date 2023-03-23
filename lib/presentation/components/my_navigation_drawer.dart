@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tank_hunter/data/hive_database.dart';
-import 'package:tank_hunter/main.dart';
+
 import 'drawer_item.dart';
 
 class MyNavigationDrawer extends StatefulWidget {

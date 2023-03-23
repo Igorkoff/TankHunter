@@ -20,17 +20,17 @@ Widget buildAppBar({
               buildAppBarButton(
                 context: context,
                 icon: leftButtonIcon ?? Icons.menu_outlined,
-                onClicked: leftButtonFunction ?? () => Scaffold.of(context).openDrawer(),
+                onPressed: leftButtonFunction ?? () => Scaffold.of(context).openDrawer(),
               ),
               Text(title, style: Theme.of(context).textTheme.titleLarge),
               buildAppBarButton(
                 context: context,
                 icon: rightButtonIcon ?? Icons.info_outline,
-                onClicked: rightButtonFunction ?? () {},
+                onPressed: rightButtonFunction ?? () {},
               ),
             ],
           ),
-          subtitle != null ? Text(subtitle, style: Theme.of(context).textTheme.titleSmall) : Container(),
+          subtitle != null ? Text(subtitle, style: Theme.of(context).textTheme.bodyMedium) : Container(),
         ],
       ),
     );

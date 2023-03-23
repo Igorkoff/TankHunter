@@ -9,7 +9,9 @@ import 'package:tank_hunter/data/firebase_database.dart';
 import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
 
 import '../../domain/pending_report.dart';
+
 import '../components/app_bar.dart';
+import '../components/snack_bar.dart';
 import '../components/info_card.dart';
 
 class PendingReportsPage extends StatefulWidget {
@@ -86,7 +88,7 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context)
-                        .showSnackBar(_buildSnackBar(messageText: 'Error: No Internet Connection', isError: true));
+                        .showSnackBar(buildSnackBar(messageText: 'Error: No Internet Connection', isError: true));
                   }
                 }
               },
@@ -96,7 +98,7 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const ScrollPhysics(),
-                    padding: const EdgeInsets.only(bottom: 24.0),
+                    padding: EdgeInsets.only(bottom: (MediaQuery.of(context).size.height * .18)),
                     itemCount: pendingReports.length,
                     itemBuilder: (context, index) {
                       final pendingReport = pendingReports[index];
@@ -114,7 +116,7 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
               ),
             );
           } else {
-            return Column(
+            return ListView(
               children: [
                 buildAppBar(context: context, title: 'Pending Reports', subtitle: 'Nothing to Upload'),
                 Container(
@@ -222,14 +224,4 @@ Widget _buildSwipeActionRight() => Container(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       decoration: const BoxDecoration(color: Colors.red),
       child: const Icon(Icons.delete, color: Color.fromRGBO(255, 253, 250, 1)),
-    );
-
-SnackBar _buildSnackBar({
-  required String messageText,
-  required bool isError,
-}) =>
-    SnackBar(
-      backgroundColor: isError ? Colors.red : Colors.green,
-      duration: isError ? const Duration(seconds: 3) : const Duration(seconds: 1),
-      content: Text(messageText),
     );

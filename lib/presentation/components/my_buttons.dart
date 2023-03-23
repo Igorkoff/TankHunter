@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 
-Widget buildIconButton({
+Widget buildSubmitButton({
+  required context,
   required String title,
-  required IconData icon,
-  required VoidCallback onClicked,
+  required VoidCallback onPressed,
+  Color? backgroundColor,
+  Color? foregroundColor,
+  double? width,
+  double? height,
 }) =>
     ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(56),
-        textStyle: const TextStyle(fontSize: 18),
-      ),
-      onPressed: onClicked,
-      child: Row(
-        children: [
-          Icon(icon, size: 28),
-          const SizedBox(width: 16),
-          Text(title),
-        ],
-      ),
-    );
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          elevation: 2.5,
+          shadowColor: const Color(0xff000000),
+          backgroundColor: backgroundColor ?? const Color(0xffF5DB53),
+          foregroundColor: foregroundColor ?? const Color(0xff01113A),
+          fixedSize: Size(width ?? 170.0, height ?? 56.0),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.0)),
+          textStyle: Theme.of(context).textTheme.titleSmall,
+        ),
+        child: Text(title));
 
 Widget buildAppBarButton({
   required context,
   required IconData icon,
-  required VoidCallback onClicked,
+  required VoidCallback onPressed,
 }) =>
     SizedBox(
       width: 40,
@@ -32,7 +34,7 @@ Widget buildAppBarButton({
         child: FloatingActionButton(
           backgroundColor: const Color(0xff01113A),
           elevation: 0.15,
-          onPressed: onClicked,
+          onPressed: onPressed,
           child: Icon(
             icon,
             color: const Color(0xffD6E1FE),
