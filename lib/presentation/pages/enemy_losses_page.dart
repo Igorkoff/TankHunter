@@ -139,7 +139,7 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
               buildAppBar(context: context, title: 'Russian Losses', subtitle: '$currentDate, Day $currentDay'),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: buildInfoCard(
+                child: buildIconInfoCard(
                   context: context,
                   icon: Icons.signal_wifi_bad_outlined,
                   text: 'Please, make sure your device is connected to the Internet.',

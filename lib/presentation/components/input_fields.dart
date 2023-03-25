@@ -2,21 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 
 Widget buildEmailAddress({
+  required context,
   required TextEditingController emailAddressController,
-  required FocusNode emailAddressFocusNode,
-  final String? emailAddressLabelText,
+  final FocusNode? emailAddressFocusNode,
   final Function()? onSubmitted,
-  bool emailAddressAutofocus = false,
 }) =>
     TextFormField(
       autocorrect: false,
-      autofocus: emailAddressAutofocus,
       focusNode: emailAddressFocusNode,
       controller: emailAddressController,
+      style: Theme.of(context).textTheme.bodyMedium,
       decoration: InputDecoration(
-        labelText: emailAddressLabelText ?? 'Email Address',
-        prefixIcon: const Icon(Icons.email),
-        border: const OutlineInputBorder(),
+        hintText: 'example@mail.com',
+        hintStyle: Theme.of(context).textTheme.bodyMedium,
+        border: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+        enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+        focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 21.5),
       ),
       validator: ValidationBuilder().email().required().build(),
       keyboardType: TextInputType.emailAddress,
@@ -30,7 +35,7 @@ Widget buildEmailAddress({
 
 Widget buildPassword({
   required TextEditingController passwordController,
-  required FocusNode passwordFocusNode,
+  final FocusNode? passwordFocusNode,
   final String? passwordLabelText,
   final Function()? onSubmitted,
 }) =>

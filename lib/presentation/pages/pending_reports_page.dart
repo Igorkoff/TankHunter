@@ -121,7 +121,7 @@ class _PendingReportsPageState extends State<PendingReportsPage> {
                 buildAppBar(context: context, title: 'Pending Reports', subtitle: 'Nothing to Upload'),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: buildInfoCard(
+                  child: buildIconInfoCard(
                     context: context,
                     icon: Icons.done,
                     text: 'Thanks, you do not have any reports waiting to be uploaded.',

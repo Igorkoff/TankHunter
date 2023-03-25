@@ -127,17 +127,23 @@ class _ReportPageState extends State<ReportPage> {
     report.setUserComment(commentController.text);
     report.setCivilianPresence(civilianPresence);
 
+    String resultMessage = 'Thank You for Your Service!';
+
     if (isInternetAvailable) {
-      await FirebaseDatabase.uploadReport(report);
+      await FirebaseDatabase.uploadReport(report).timeout(const Duration(seconds: 10), onTimeout: () async {
+        resultMessage = 'Report added to Pending Reports';
+        File image = await Utility.saveImage(report.image!);
+        HiveDatabase.savePendingReport(report, image);
+      });
     } else {
+      resultMessage = 'Report added to Pending Reports';
       File image = await Utility.saveImage(report.image!);
       HiveDatabase.savePendingReport(report, image);
     }
 
     if (context.mounted) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(buildSnackBar(messageText: 'Thank You for Your Service!', isError: false));
+      ScaffoldMessenger.of(context).showSnackBar(buildSnackBar(messageText: resultMessage, isError: false));
 
       commentController.clear(); // remove any text from the comment input
       civilianPresence = CivilianPresence.unknown; // reset the civilian presence radio buttons
@@ -212,7 +218,7 @@ class _ReportPageState extends State<ReportPage> {
 
   Widget _buildImagePicker() => Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 0.15,
+        elevation: 2.5,
         child: Ink(
           height: 225.0,
           width: MediaQuery.of(context).size.width,

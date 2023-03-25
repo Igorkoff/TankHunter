@@ -1,11 +1,20 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../domain/pending_report.dart';
 import '../domain/report.dart';
 
 class FirebaseDatabase {
+  static Future sendPasswordResetEmail(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      return Future.error('Failed to Send Password Reset Email: $e');
+    }
+  }
+
   static Future<String> _uploadImage(File image) async {
     final String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../components/input_fields.dart';
-import 'forgot_password_page.dart';
+import 'reset_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -96,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       children: [
                         buildEmailAddress(
+                          context: context,
                           emailAddressController: _emailController,
                           emailAddressFocusNode: _emailFocusNode,
                           onSubmitted: () {
@@ -114,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  return const ForgotPasswordPage();
+                                  return const ResetPasswordPage();
                                 }));
                               },
                               child: const Text(

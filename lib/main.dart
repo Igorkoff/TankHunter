@@ -46,6 +46,8 @@ class TankHunter extends StatelessWidget {
               GoogleFonts.montserrat(textStyle: textTheme.titleSmall, fontSize: 14.0, fontWeight: FontWeight.w500),
           labelLarge:
               GoogleFonts.montserrat(textStyle: textTheme.labelLarge, fontSize: 18.0, fontWeight: FontWeight.w500),
+          labelMedium:
+              GoogleFonts.montserrat(textStyle: textTheme.labelMedium, fontSize: 14.0, fontWeight: FontWeight.w500),
           bodyLarge:
               GoogleFonts.montserrat(textStyle: textTheme.bodyLarge, fontSize: 16.0, fontWeight: FontWeight.w300),
           bodyMedium:
