@@ -5,6 +5,7 @@ Widget buildEmailAddress({
   required context,
   required TextEditingController emailAddressController,
   final FocusNode? emailAddressFocusNode,
+  final String? hintText,
   final Function()? onSubmitted,
 }) =>
     TextFormField(
@@ -13,7 +14,7 @@ Widget buildEmailAddress({
       controller: emailAddressController,
       style: Theme.of(context).textTheme.bodyMedium,
       decoration: InputDecoration(
-        hintText: 'example@mail.com',
+        hintText: hintText ?? 'example@mail.com',
         hintStyle: Theme.of(context).textTheme.bodyMedium,
         border: OutlineInputBorder(
             borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
@@ -34,19 +35,26 @@ Widget buildEmailAddress({
     );
 
 Widget buildPassword({
+  required context,
   required TextEditingController passwordController,
   final FocusNode? passwordFocusNode,
-  final String? passwordLabelText,
   final Function()? onSubmitted,
+  final String? hintText,
 }) =>
     TextFormField(
       obscureText: true,
       focusNode: passwordFocusNode,
       controller: passwordController,
       decoration: InputDecoration(
-        labelText: passwordLabelText ?? 'Password',
-        prefixIcon: const Icon(Icons.lock),
-        border: const OutlineInputBorder(),
+        hintText: hintText ?? 'password',
+        hintStyle: Theme.of(context).textTheme.bodyMedium,
+        border: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+        enabledBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+        focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(color: Color(0xff1D44A7)), borderRadius: BorderRadius.circular(16.0)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 21.5),
       ),
       validator: ValidationBuilder().minLength(8).required().build(),
       keyboardType: TextInputType.text,

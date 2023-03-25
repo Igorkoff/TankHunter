@@ -11,7 +11,7 @@ Widget buildAppBar({
   VoidCallback? rightButtonFunction,
 }) =>
     Container(
-      margin: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0),
+      margin: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 24.0),
       child: Column(
         children: [
           Row(
@@ -19,12 +19,14 @@ Widget buildAppBar({
             children: [
               buildAppBarButton(
                 context: context,
+                heroTag: 'left_button',
                 icon: leftButtonIcon ?? Icons.menu_outlined,
                 onPressed: leftButtonFunction ?? () => Scaffold.of(context).openDrawer(),
               ),
               Text(title, style: Theme.of(context).textTheme.titleLarge),
               buildAppBarButton(
                 context: context,
+                heroTag: 'right_button',
                 icon: rightButtonIcon ?? Icons.info_outline,
                 onPressed: rightButtonFunction ?? () {},
               ),

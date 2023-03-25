@@ -27,11 +27,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>To Report Enemy Vehicles</string>
+	<string>You will be able to photograph enemy movements.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>To Report Enemy Vehicles</string>
+	<string>You will be able to provide information about the exact enemy location.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>To Report Enemy Vehicles</string>
+	<string>You will be able to provide information about the exact enemy location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>For Testing Purposes</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -57,5 +57,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>https</string>
+    </array>
 </dict>
 </plist>

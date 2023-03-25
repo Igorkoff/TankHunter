@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tank_hunter/data/firebase_database.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
@@ -37,19 +38,29 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             return const Center(child: CircularProgressIndicator(color: Color(0xff0037C3)));
           });
 
-      await FirebaseDatabase.sendPasswordResetEmail(_emailController.text).then((value) {
+      try {
+        await FirebaseDatabase.sendPasswordResetEmail(_emailController.text);
         if (context.mounted) {
           Navigator.pop(context);
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return const ResetPasswordConfirmationPage();
           }));
         }
-      }).catchError((e) {
+      } on FirebaseAuthException catch (e) {
+        debugPrint(e.toString());
+        String errorMessage = 'Error: Unknown Error';
+
+        if (e.code == 'user-not-found') {
+          errorMessage = 'Error: User Not Found';
+        } else if (e.code == 'network-request-failed') {
+          errorMessage = 'Error: No Internet Connection';
+        }
+
         if (context.mounted) {
           Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(buildSnackBar(messageText: 'Error: Unknown Error', isError: true));
+          ScaffoldMessenger.of(context).showSnackBar(buildSnackBar(messageText: errorMessage, isError: true));
         }
-      });
+      }
     }
   }
 
@@ -65,12 +76,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       ),
       body: SafeArea(
         child: KeyboardDismisser(
-          gestures: const [
-            GestureType.onVerticalDragDown,
-          ],
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 40.0, 16.0, 0.0),
+              padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 0.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,14 +89,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     text: 'Enter your registered email below to receive password reset instructions.',
                   ),
                   const SizedBox(height: 40.0),
-                  Text('E-Mail Address', style: Theme.of(context).textTheme.labelLarge),
-                  const SizedBox(height: 24.0),
                   Form(
                     key: _formKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text('E-Mail Address', style: Theme.of(context).textTheme.labelLarge),
+                        const SizedBox(height: 24.0),
                         buildEmailAddress(context: context, emailAddressController: _emailController),
-                        const SizedBox(height: 36.0),
+                        const SizedBox(height: 24.0),
                         SizedBox(
                           width: double.infinity,
                           child: buildSubmitButton(

@@ -7,12 +7,35 @@ import '../domain/pending_report.dart';
 import '../domain/report.dart';
 
 class FirebaseDatabase {
-  static Future sendPasswordResetEmail(String email) async {
+  static Future<String?> updatePassword(String oldPassword, String newPassword) async {
+    User user = FirebaseAuth.instance.currentUser!;
+    AuthCredential credential = EmailAuthProvider.credential(email: user.email!, password: oldPassword.trim());
+
+    Map<String, String?> codeResponses = {
+      // Re-auth responses
+      "user-mismatch": null,
+      "user-not-found": null,
+      "invalid-credential": null,
+      "invalid-email": null,
+      "wrong-password": null,
+      "invalid-verification-code": null,
+      "invalid-verification-id": null,
+      // Update password error codes
+      "weak-password": null,
+      "requires-recent-login": null
+    };
+
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
-    } on FirebaseAuthException catch (e) {
-      return Future.error('Failed to Send Password Reset Email: $e');
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword.trim());
+      return null;
+    } on FirebaseAuthException catch (error) {
+      return codeResponses[error.code] ?? "Unknown";
     }
+  }
+
+  static Future sendPasswordResetEmail(String email) async {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
   }
 
   static Future<String> _uploadImage(File image) async {

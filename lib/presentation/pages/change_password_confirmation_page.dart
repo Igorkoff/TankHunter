@@ -4,14 +4,14 @@ import 'package:flutter/services.dart';
 import '../components/my_buttons.dart';
 import '../components/info_card.dart';
 
-class ResetPasswordConfirmationPage extends StatefulWidget {
-  const ResetPasswordConfirmationPage({Key? key}) : super(key: key);
+class ChangePasswordConfirmationPage extends StatefulWidget {
+  const ChangePasswordConfirmationPage({Key? key}) : super(key: key);
 
   @override
-  State<ResetPasswordConfirmationPage> createState() => _ResetPasswordConfirmationPageState();
+  State<ChangePasswordConfirmationPage> createState() => _ChangePasswordConfirmationPageState();
 }
 
-class _ResetPasswordConfirmationPageState extends State<ResetPasswordConfirmationPage> {
+class _ChangePasswordConfirmationPageState extends State<ChangePasswordConfirmationPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -37,7 +37,7 @@ class _ResetPasswordConfirmationPageState extends State<ResetPasswordConfirmatio
                       ],
                     ),
                     child: const Icon(
-                      Icons.mark_email_unread_rounded,
+                      Icons.lock_reset_outlined,
                       color: Color(0xff01113A),
                       size: 70.0,
                     ),
@@ -46,13 +46,13 @@ class _ResetPasswordConfirmationPageState extends State<ResetPasswordConfirmatio
                 const SizedBox(height: 35.0),
                 buildInfoCard(
                   context: context,
-                  title: 'Check Your E-Mail',
-                  text: 'We have sent password recover instructions to your email address.',
+                  title: 'Thank You',
+                  text: 'Your password was successfully changed.',
                 ),
                 const SizedBox(height: 35.0),
                 buildSubmitButton(
                   context: context,
-                  title: 'Back to Login',
+                  title: 'Back Home',
                   width: 240,
                   onPressed: () {
                     Navigator.of(context).popUntil((route) => route.isFirst);

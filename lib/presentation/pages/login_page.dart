@@ -105,6 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 12.0),
                         buildPassword(
+                          context: context,
                           passwordController: _passwordController,
                           passwordFocusNode: _passwordFocusNode,
                         ),
@@ -130,10 +131,11 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 24.0),
                         GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
-                              signIn();
+                              await signIn();
+                              setState(() {});
                             }
                           },
                           child: Container(

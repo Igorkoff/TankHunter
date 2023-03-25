@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tank_hunter/data/hive_database.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
+import '../pages/change_password_page.dart';
 import 'drawer_item.dart';
 
 class MyNavigationDrawer extends StatefulWidget {
@@ -16,19 +18,19 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
   Widget build(BuildContext context) {
     return Drawer(
       child: Material(
-        color: const Color.fromRGBO(32, 42, 68, 1),
+        color: const Color(0xff01113A),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 80, 24, 0),
           child: Column(
             children: [
               DrawerItem(
                 name: 'My Profile',
-                icon: Icons.person,
+                icon: Icons.person_outline,
                 onPressed: () => onItemPressed(context, index: 0),
               ),
               DrawerItem(
                 name: 'About Us',
-                icon: Icons.info,
+                icon: Icons.info_outline,
                 onPressed: () => onItemPressed(context, index: 1),
               ),
               const Divider(
@@ -37,7 +39,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
               ),
               DrawerItem(
                 name: 'Sign Out',
-                icon: Icons.logout,
+                icon: Icons.logout_outlined,
                 onPressed: () => onItemPressed(context, index: 2),
               ),
             ],
@@ -51,6 +53,19 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
     Navigator.pop(context);
 
     switch (index) {
+      case 0:
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const ChangePasswordPage();
+        }));
+        break;
+      case 1:
+        const url = 'https://github.com/Igorkoff/TankHunter';
+        if (await canLaunchUrlString(url)) {
+          await launchUrlString(url);
+        } else {
+          throw 'Could not Launch $url';
+        }
+        break;
       case 2:
         await HiveDatabase.deleteAllPendingReports();
         FirebaseAuth.instance.signOut();

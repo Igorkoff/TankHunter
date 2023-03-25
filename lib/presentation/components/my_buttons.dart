@@ -24,6 +24,7 @@ Widget buildSubmitButton({
 
 Widget buildAppBarButton({
   required context,
+  required heroTag,
   required IconData icon,
   required VoidCallback onPressed,
 }) =>
@@ -34,6 +35,7 @@ Widget buildAppBarButton({
         child: FloatingActionButton(
           backgroundColor: const Color(0xff01113A),
           elevation: 0.15,
+          heroTag: heroTag,
           onPressed: onPressed,
           child: Icon(
             icon,
