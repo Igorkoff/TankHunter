@@ -57,3 +57,26 @@ Widget buildInfoCard({
         ),
       ),
     );
+
+Widget buildSettingsCard({
+  required context,
+  required String title,
+  required List rows,
+  TextAlign? textAlign,
+}) =>
+    Card(
+      elevation: 2.5,
+      color: const Color(0xffE5EBFA),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 20),
+            for (var row in rows) row,
+          ],
+        ),
+      ),
+    );

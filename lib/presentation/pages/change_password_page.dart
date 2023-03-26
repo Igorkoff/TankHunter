@@ -159,7 +159,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 21.5),
                           ),
                           validator: (value) {
-                            if (value != _newPasswordController.text) {
+                            if (value == null || value == '') {
+                              return 'The field is required';
+                            } else if (value != _newPasswordController.text) {
                               return 'Please make sure your passwords match';
                             }
                             return null;
@@ -176,6 +178,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             onPressed: _updatePassword,
                           ),
                         ),
+                        const SizedBox(height: 36.0),
                       ],
                     ),
                   ),

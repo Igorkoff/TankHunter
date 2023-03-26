@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tank_hunter/data/hive_database.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../pages/change_password_page.dart';
+import '../pages/user_profile.dart';
 import 'drawer_item.dart';
 
 class MyNavigationDrawer extends StatefulWidget {
@@ -55,7 +55,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
     switch (index) {
       case 0:
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const ChangePasswordPage();
+          return const UserProfilePage();
         }));
         break;
       case 1:
