@@ -5,26 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:firebase_ml_model_downloader/firebase_ml_model_downloader.dart';
 import 'package:observe_internet_connectivity/observe_internet_connectivity.dart';
-import 'package:tank_hunter/presentation/components/my_buttons.dart';
 
 import '../../domain/report.dart';
 import '../../domain/utility.dart';
 import '../../domain/classifier.dart';
 import '../../data/hive_database.dart';
 import '../../data/firebase_database.dart';
+
 import '../components/app_bar.dart';
 import '../components/snack_bar.dart';
+import '../components/my_buttons.dart';
 
-class ReportPage extends StatefulWidget {
-  const ReportPage({Key? key}) : super(key: key);
+class CreateReportPage extends StatefulWidget {
+  const CreateReportPage({Key? key}) : super(key: key);
 
   @override
-  State<ReportPage> createState() => _ReportPageState();
+  State<CreateReportPage> createState() => _CreateReportPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _CreateReportPageState extends State<CreateReportPage> {
   final commentController = TextEditingController();
   final commentFocusNode = FocusNode();
 
@@ -121,7 +123,7 @@ class _ReportPageState extends State<ReportPage> {
         barrierDismissible: false,
         context: context,
         builder: (context) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xff0037C3)));
+          return Center(child: LoadingAnimationWidget.hexagonDots(color: const Color(0xff0037C3), size: 50));
         });
 
     report.setUserComment(commentController.text);
@@ -202,7 +204,7 @@ class _ReportPageState extends State<ReportPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: buildSubmitButton(
+                child: buildButton(
                   context: context,
                   title: 'Submit',
                   onPressed: _submitReport,

@@ -7,12 +7,29 @@ import '../domain/pending_report.dart';
 import '../domain/report.dart';
 
 class FirebaseDatabase {
+  static Future<String?> signInWithEmailAndPassword(String email, String password) async {
+    Map<String, String?> codeResponses = {
+      "invalid-email": null,
+      "user-disabled": null,
+      "user-not-found": null,
+      "wrong-password": null,
+    };
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.trim(), password: password.trim());
+      return null;
+    } on FirebaseAuthException catch (error) {
+      debugPrint(error.code);
+      debugPrint(codeResponses[error.code]);
+      return codeResponses[error.code] ?? "Unknown";
+    }
+  }
+
   static Future<String?> updatePassword(String oldPassword, String newPassword) async {
     User user = FirebaseAuth.instance.currentUser!;
     AuthCredential credential = EmailAuthProvider.credential(email: user.email!, password: oldPassword.trim());
 
     Map<String, String?> codeResponses = {
-      // Re-auth responses
       "user-mismatch": null,
       "user-not-found": null,
       "invalid-credential": null,
@@ -20,7 +37,6 @@ class FirebaseDatabase {
       "wrong-password": null,
       "invalid-verification-code": null,
       "invalid-verification-id": null,
-      // Update password error codes
       "weak-password": null,
       "requires-recent-login": null
     };

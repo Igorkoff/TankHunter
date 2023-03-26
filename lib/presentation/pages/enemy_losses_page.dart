@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../domain/enemy_losses.dart';
 import '../components/app_bar.dart';
@@ -148,8 +149,8 @@ class _EnemyLossesPageState extends State<EnemyLossesPage> {
             ],
           );
         }
-        return const Center(
-          child: CircularProgressIndicator(color: Color(0xff0037C3)),
+        return Center(
+          child: LoadingAnimationWidget.hexagonDots(color: const Color(0xff0037C3), size: 50),
         );
       },
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildSubmitButton({
+Widget buildButton({
   required context,
   required String title,
   required VoidCallback onPressed,

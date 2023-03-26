@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tank_hunter/data/hive_database.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../pages/user_profile.dart';
+import '../pages/user_profile_page.dart';
 import 'drawer_item.dart';
 
 class MyNavigationDrawer extends StatefulWidget {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../components/animated_toggle.dart';
 import 'change_password_page.dart';
+
+import '../components/animated_toggle.dart';
 import '../components/info_card.dart';
 
 class UserProfilePage extends StatefulWidget {
@@ -92,7 +93,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               },
                               child: Text(
                                 'Change Password',
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: const Color(0xff0037C3),
                                       fontWeight: FontWeight.w500,
                                     ),

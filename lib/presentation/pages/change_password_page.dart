@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tank_hunter/data/firebase_database.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'change_password_confirmation_page.dart';
 
@@ -47,7 +48,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           barrierDismissible: false,
           context: context,
           builder: (context) {
-            return const Center(child: CircularProgressIndicator(color: Color(0xff0037C3)));
+            return Center(child: LoadingAnimationWidget.hexagonDots(color: const Color(0xff0037C3), size: 50));
           });
 
       String? errorCode =
@@ -172,7 +173,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         const SizedBox(height: 36.0),
                         SizedBox(
                           width: double.infinity,
-                          child: buildSubmitButton(
+                          child: buildButton(
                             context: context,
                             title: 'Update Password',
                             onPressed: _updatePassword,

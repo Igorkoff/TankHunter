@@ -50,7 +50,7 @@ class _ResetPasswordConfirmationPageState extends State<ResetPasswordConfirmatio
                   text: 'We have sent password recover instructions to your email address.',
                 ),
                 const SizedBox(height: 35.0),
-                buildSubmitButton(
+                buildButton(
                   context: context,
                   title: 'Back to Login',
                   width: 240,

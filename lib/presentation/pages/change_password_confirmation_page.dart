@@ -50,7 +50,7 @@ class _ChangePasswordConfirmationPageState extends State<ChangePasswordConfirmat
                   text: 'Your password was successfully changed.',
                 ),
                 const SizedBox(height: 35.0),
-                buildSubmitButton(
+                buildButton(
                   context: context,
                   title: 'Back Home',
                   width: 240,

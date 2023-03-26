@@ -7,7 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:tank_hunter/presentation/pages/auth_page.dart';
-import 'package:tank_hunter/presentation/pages/report_page.dart';
+import 'package:tank_hunter/presentation/pages/create_report_page.dart';
 import 'package:tank_hunter/presentation/pages/user_awards_page.dart';
 import 'package:tank_hunter/presentation/pages/pending_reports_page.dart';
 import 'package:tank_hunter/presentation/pages/enemy_losses_page.dart';
@@ -87,7 +87,7 @@ class _RootPageState extends State<RootPage> {
   int _currentPage = 0;
 
   final List<Widget> _pages = [
-    const ReportPage(),
+    const CreateReportPage(),
     const PendingReportsPage(),
     const UserAwardsPage(),
     const EnemyLossesPage(),
