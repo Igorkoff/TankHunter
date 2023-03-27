@@ -97,7 +97,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       children: [
                         Text('E-Mail Address', style: Theme.of(context).textTheme.labelLarge),
                         const SizedBox(height: 24.0),
-                        buildEmailAddress(context: context, emailAddressController: _emailController),
+                        buildEmailAddress(context: context, controller: _emailController),
                         const SizedBox(height: 24.0),
                         SizedBox(
                           width: double.infinity,

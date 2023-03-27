@@ -123,8 +123,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         const SizedBox(height: 24.0),
                         buildPassword(
                           context: context,
-                          passwordController: _oldPasswordController,
-                          passwordFocusNode: _oldPasswordFocusNode,
+                          controller: _oldPasswordController,
+                          focusNode: _oldPasswordFocusNode,
                           onSubmitted: () {
                             FocusScope.of(context).requestFocus(_newPasswordFocusNode);
                           },
@@ -134,8 +134,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         const SizedBox(height: 24.0),
                         buildPassword(
                           context: context,
-                          passwordController: _newPasswordController,
-                          passwordFocusNode: _newPasswordFocusNode,
+                          controller: _newPasswordController,
+                          focusNode: _newPasswordFocusNode,
                           onSubmitted: () {
                             FocusScope.of(context).requestFocus(_confirmPasswordFocusNode);
                           },

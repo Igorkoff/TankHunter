@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tank_hunter/presentation/pages/login_page.dart';
-import 'package:tank_hunter/presentation/pages/register_page.dart';
+import 'package:tank_hunter/presentation/pages/signup_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
@@ -21,9 +21,9 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     if (showLoginPage) {
-      return LoginPage(showRegisterPage: toggleScreens);
+      return LoginPage(showSignupPage: toggleScreens);
     } else {
-      return RegisterPage(showLoginPage: toggleScreens);
+      return SignupPage(showLoginPage: toggleScreens);
     }
   }
 }

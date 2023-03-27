@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tank_hunter/data/firebase_database.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'change_password_page.dart';
 
@@ -17,6 +19,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
   final double _avatarSize = 150.0;
   int _toggleValue = 0;
 
+  Future<Map<String, dynamic>> _getUserDetails() async {
+    final userID = FirebaseAuth.instance.currentUser?.uid;
+    return await FirebaseDatabase.getUserDetails(userID!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,99 +34,110 @@ class _UserProfilePageState extends State<UserProfilePage> {
         backgroundColor: const Color(0xff01113A),
         centerTitle: true,
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            child: CustomPaint(
-              size: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height * 0.5),
-              painter: CustomShape(),
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.1,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: _avatarSize,
-              width: _avatarSize,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(image: AssetImage('assets/images/yellow_stripe.png'), fit: BoxFit.scaleDown),
-                boxShadow: [BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.25), offset: Offset(0, 4), blurRadius: 20.0)],
-              ),
-            ),
-          ),
-          Positioned(
-              top: (MediaQuery.of(context).size.height * 0.1 + _avatarSize),
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 0),
-                child: Column(
-                  children: [
-                    Text(
-                      FirebaseAuth.instance.currentUser?.displayName ?? 'Igor Alekhnovych',
-                      style: Theme.of(context).textTheme.titleLarge,
+      body: FutureBuilder<Map<String, dynamic>>(
+          future: _getUserDetails(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return Center(
+                child: LoadingAnimationWidget.hexagonDots(color: const Color(0xff0037C3), size: 50),
+              );
+            } else {
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  Positioned(
+                    child: CustomPaint(
+                      size: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height * 0.5),
+                      painter: CustomShape(),
                     ),
-                    const SizedBox(height: 6.0),
-                    Text(
-                      'Passport № FU304229',
-                      style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Positioned(
+                    top: MediaQuery.of(context).size.height * 0.1,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: _avatarSize,
+                      width: _avatarSize,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: AssetImage('assets/images/yellow_stripe.png'), fit: BoxFit.scaleDown),
+                        boxShadow: [
+                          BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.25), offset: Offset(0, 4), blurRadius: 20.0)
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 24.0),
-                    buildSettingsCard(
-                      context: context,
-                      title: 'Account Settings',
-                      rows: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  Positioned(
+                      top: (MediaQuery.of(context).size.height * 0.1 + _avatarSize),
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 0),
+                        child: Column(
                           children: [
-                            Text('Email', style: Theme.of(context).textTheme.bodyLarge),
-                            Text(FirebaseAuth.instance.currentUser?.email ?? 'placeholder@mail.com',
-                                style: Theme.of(context).textTheme.bodyLarge),
-                          ],
-                        ),
-                        const SizedBox(height: 16.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Password', style: Theme.of(context).textTheme.bodyLarge),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  return const ChangePasswordPage();
-                                }));
-                              },
-                              child: Text(
-                                'Change Password',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: const Color(0xff0037C3),
-                                      fontWeight: FontWeight.w500,
+                            Text(
+                              '${snapshot.data?['first_name']} ${snapshot.data?['last_name']}',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 6.0),
+                            Text(
+                              'Passport № ${snapshot.data?['passport_number']}',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(height: 24.0),
+                            buildSettingsCard(
+                              context: context,
+                              title: 'Account Settings',
+                              rows: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Email', style: Theme.of(context).textTheme.bodyLarge),
+                                    Text(FirebaseAuth.instance.currentUser?.email ?? 'user@mail.com',
+                                        style: Theme.of(context).textTheme.bodyLarge),
+                                  ],
+                                ),
+                                const SizedBox(height: 16.0),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Password', style: Theme.of(context).textTheme.bodyLarge),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                          return const ChangePasswordPage();
+                                        }));
+                                      },
+                                      child: Text(
+                                        'Change Password',
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                              color: const Color(0xff0037C3),
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                      ),
                                     ),
-                              ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 32.0),
+                            AnimatedToggle(
+                              values: const ['🇬🇧 English', ' 🇺🇦 Українська'],
+                              onToggleCallback: (value) {
+                                _toggleValue = value;
+                              },
+                              buttonColor: const Color(0xffB0C6FF),
+                              backgroundColor: const Color(0xffE5EBFA),
+                              //textColor: const Color(0xFFFFFFFF),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 32.0),
-                    AnimatedToggle(
-                      values: const ['🇬🇧 English', ' 🇺🇦 Українська'],
-                      onToggleCallback: (value) {
-                        setState(() {
-                          _toggleValue = value;
-                        });
-                      },
-                      buttonColor: const Color(0xffB0C6FF),
-                      backgroundColor: const Color(0xffE5EBFA),
-                      //textColor: const Color(0xFFFFFFFF),
-                    ),
-                  ],
-                ),
-              ))
-        ],
-      ),
+                      ))
+                ],
+              );
+            }
+          }),
     );
   }
 }

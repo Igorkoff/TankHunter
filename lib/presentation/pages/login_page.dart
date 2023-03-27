@@ -10,8 +10,8 @@ import '../components/my_buttons.dart';
 import '../components/snack_bar.dart';
 
 class LoginPage extends StatefulWidget {
-  final VoidCallback showRegisterPage;
-  const LoginPage({Key? key, required this.showRegisterPage}) : super(key: key);
+  final VoidCallback showSignupPage;
+  const LoginPage({Key? key, required this.showSignupPage}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -113,8 +113,8 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(height: 12.0),
                             buildEmailAddress(
                               context: context,
-                              emailAddressController: _emailController,
-                              emailAddressFocusNode: _emailFocusNode,
+                              controller: _emailController,
+                              focusNode: _emailFocusNode,
                               borderColor: const Color(0xff8F8787),
                               hintStyle:
                                   Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xff8F8787)),
@@ -130,8 +130,8 @@ class _LoginPageState extends State<LoginPage> {
                             const SizedBox(height: 12.0),
                             buildPassword(
                               context: context,
-                              passwordController: _passwordController,
-                              passwordFocusNode: _passwordFocusNode,
+                              controller: _passwordController,
+                              focusNode: _passwordFocusNode,
                               borderColor: const Color(0xff8F8787),
                               hintStyle:
                                   Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color(0xff8F8787)),
@@ -181,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                 ),
                                 GestureDetector(
-                                  onTap: widget.showRegisterPage,
+                                  onTap: widget.showSignupPage,
                                   child: Text(
                                     'Register Now.',
                                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(

@@ -38,6 +38,8 @@ class TankHunter extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xffD6E1FE),
         textTheme: GoogleFonts.montserratTextTheme(textTheme).copyWith(
+          headlineSmall:
+              GoogleFonts.montserrat(textStyle: textTheme.headlineSmall, fontSize: 24.0, fontWeight: FontWeight.w700),
           titleLarge:
               GoogleFonts.montserrat(textStyle: textTheme.titleLarge, fontSize: 20.0, fontWeight: FontWeight.w600),
           titleMedium:
