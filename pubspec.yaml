@@ -61,6 +61,7 @@ dependencies:
   observe_internet_connectivity: ^1.0.2
   loading_animation_widget: ^1.2.0+4
   dot_navigation_bar: ^1.0.1+4
+  percent_indicator: ^4.2.3
 
 dev_dependencies:
   flutter_test:
