@@ -7,7 +7,7 @@ import 'change_password_confirmation_page.dart';
 
 import '../components/info_card.dart';
 import '../components/input_fields.dart';
-import '../components/my_buttons.dart';
+import '../components/buttons.dart';
 import '../components/snack_bar.dart';
 
 class ChangePasswordPage extends StatefulWidget {

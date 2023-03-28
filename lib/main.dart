@@ -11,7 +11,7 @@ import 'package:tank_hunter/presentation/pages/create_report_page.dart';
 import 'package:tank_hunter/presentation/pages/user_awards_page.dart';
 import 'package:tank_hunter/presentation/pages/pending_reports_page.dart';
 import 'package:tank_hunter/presentation/pages/enemy_losses_page.dart';
-import 'package:tank_hunter/presentation/components/my_navigation_drawer.dart';
+import 'package:tank_hunter/presentation/components/navigation_drawer.dart';
 
 import 'domain/enemy_losses.dart';
 import 'domain/pending_report.dart';
@@ -38,6 +38,8 @@ class TankHunter extends StatelessWidget {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xffD6E1FE),
         textTheme: GoogleFonts.montserratTextTheme(textTheme).copyWith(
+          displayMedium:
+              GoogleFonts.montserrat(textStyle: textTheme.displayMedium, fontSize: 48.0, fontWeight: FontWeight.w600),
           headlineSmall:
               GoogleFonts.montserrat(textStyle: textTheme.headlineSmall, fontSize: 24.0, fontWeight: FontWeight.w700),
           titleLarge:

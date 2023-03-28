@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../components/my_buttons.dart';
+import '../components/buttons.dart';
 import '../components/info_card.dart';
 
 class ChangePasswordConfirmationPage extends StatefulWidget {

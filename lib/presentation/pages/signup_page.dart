@@ -3,7 +3,7 @@ import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:tank_hunter/data/firebase_database.dart';
 
 import '../components/input_fields.dart';
-import '../components/my_buttons.dart';
+import '../components/buttons.dart';
 import '../components/snack_bar.dart';
 
 class SignupPage extends StatefulWidget {
@@ -99,7 +99,7 @@ class _SignupPageState extends State<SignupPage> {
             child: Center(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(36.0, 20.0, 36.0, 20.0),
+                  padding: const EdgeInsets.all(36.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

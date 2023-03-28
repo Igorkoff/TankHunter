@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tank_hunter/data/firebase_database.dart';
@@ -6,7 +7,7 @@ import 'package:tank_hunter/data/firebase_database.dart';
 import 'reset_password_page.dart';
 
 import '../components/input_fields.dart';
-import '../components/my_buttons.dart';
+import '../components/buttons.dart';
 import '../components/snack_bar.dart';
 
 class LoginPage extends StatefulWidget {
@@ -101,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/logo-no-background.png', height: 50),
+                      Image.asset('assets/images/tank_hunter_logo_color.png', height: 50.0),
                       const SizedBox(height: 75.0),
                       Form(
                         key: _formKey,

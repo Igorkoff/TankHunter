@@ -16,8 +16,8 @@ import '../../data/hive_database.dart';
 import '../../data/firebase_database.dart';
 
 import '../components/app_bar.dart';
+import '../components/buttons.dart';
 import '../components/snack_bar.dart';
-import '../components/my_buttons.dart';
 
 class CreateReportPage extends StatefulWidget {
   const CreateReportPage({Key? key}) : super(key: key);

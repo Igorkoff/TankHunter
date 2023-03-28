@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Utility {
+  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
   static Future<File> saveImage(File image) async {
     try {
       final Directory appSupportDirectory = await getApplicationSupportDirectory(); // get the app support folder
@@ -35,12 +38,32 @@ class Utility {
       openAppSettings();
     }
 
-    var galleryStatus = await Permission.photos.request();
+    PermissionStatus galleryStatus;
 
-    if (galleryStatus.isDenied) {
-      await Permission.photos.request();
-    } else if (galleryStatus.isPermanentlyDenied) {
-      openAppSettings();
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfoPlugin.androidInfo;
+      if (androidInfo.version.sdkInt <= 32) {
+        galleryStatus = await Permission.storage.request();
+        if (galleryStatus.isDenied) {
+          await Permission.storage.request();
+        } else if (galleryStatus.isPermanentlyDenied) {
+          openAppSettings();
+        }
+      } else {
+        galleryStatus = await Permission.photos.request();
+        if (galleryStatus.isDenied) {
+          await Permission.photos.request();
+        } else if (galleryStatus.isPermanentlyDenied) {
+          openAppSettings();
+        }
+      }
+    } else {
+      galleryStatus = await Permission.photos.request();
+      if (galleryStatus.isDenied) {
+        await Permission.photos.request();
+      } else if (galleryStatus.isPermanentlyDenied) {
+        openAppSettings();
+      }
     }
 
     LocationPermission permission = await Geolocator.checkPermission();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'my_buttons.dart';
+import 'package:tank_hunter/presentation/pages/tips_page.dart';
+import 'buttons.dart';
 
 Widget buildAppBar({
   required context,
@@ -19,16 +20,22 @@ Widget buildAppBar({
             children: [
               buildAppBarButton(
                 context: context,
-                heroTag: 'left_button',
+                heroTag: null,
                 icon: leftButtonIcon ?? Icons.menu_outlined,
                 onPressed: leftButtonFunction ?? () => Scaffold.of(context).openDrawer(),
               ),
               Text(title, style: Theme.of(context).textTheme.titleLarge),
               buildAppBarButton(
                 context: context,
-                heroTag: 'right_button',
+                heroTag: null,
                 icon: rightButtonIcon ?? Icons.info_outline,
-                onPressed: rightButtonFunction ?? () {},
+                onPressed: rightButtonFunction ??
+                    () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            fullscreenDialog: true,
+                            builder: (context) => const TipsPage(),
+                          ),
+                        ),
               ),
             ],
           ),
