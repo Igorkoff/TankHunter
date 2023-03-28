@@ -42,7 +42,7 @@ Widget buildPassportNumber({
   required TextEditingController controller,
   final FocusNode? focusNode,
   final Color borderColor = const Color(0xff1D44A7),
-  final String hintText = 'Example: FF00000',
+  final String hintText = 'Example: FF000000',
   final TextStyle? hintStyle,
   final TextStyle? inputStyle,
   final Function()? onSubmitted,

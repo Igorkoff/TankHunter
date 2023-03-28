@@ -28,18 +28,12 @@ class TipsPage extends StatelessWidget {
                 const SizedBox(height: 20.0),
                 Text(
                   'Before taking a photo of the vehicle, make sure that it\'s not ours. Russian tanks often marked with: Z, O and V.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      ?.copyWith(color: const Color(0xffD6E1FE), fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(color: const Color(0xffD6E1FE)),
                 ),
                 const SizedBox(height: 20.0),
                 Text(
-                  'After you took a photo, our AI will validate it. If you could not upload the report immediately, you have about 12 hours to upload it from Pending Reports page.',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      ?.copyWith(color: const Color(0xffD6E1FE), fontWeight: FontWeight.bold),
+                  'After you took a photo, our AI will validate it. If you couldn\'t upload the report immediately, you will have 12 hours to do this.',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(color: const Color(0xffD6E1FE)),
                 ),
                 const SizedBox(height: 40.0),
                 buildButton(context: context, title: 'Understood', onPressed: () => Navigator.of(context).pop())
