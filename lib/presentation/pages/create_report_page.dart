@@ -58,10 +58,14 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   Future _initWithLocalModel() async {
-    model = await FirebaseModelDownloader.instance
-        .getModel(modelName, FirebaseModelDownloadType.localModelUpdateInBackground);
-
-    Classifier.createFromFirebase(assetPath: model?.file.path, confidenceThreshold: 0.20, maxCount: 3);
+    if (Platform.isAndroid) {
+      modelName = 'assets/ml/vertex.tflite';
+      Classifier.createFromLocal(assetPath: modelName, confidenceThreshold: 0.20, maxCount: 3);
+    } else {
+      model = await FirebaseModelDownloader.instance
+          .getModel(modelName, FirebaseModelDownloadType.localModelUpdateInBackground);
+      Classifier.createFromFirebase(assetPath: model?.file.path, confidenceThreshold: 0.20, maxCount: 3);
+    }
     canProcess = true;
     setState(() {});
   }
