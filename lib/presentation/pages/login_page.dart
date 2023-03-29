@@ -36,32 +36,13 @@ class _LoginPageState extends State<LoginPage> {
             return Center(child: LoadingAnimationWidget.hexagonDots(color: const Color(0xff0037C3), size: 50));
           });
 
-      String? errorCode =
+      String? errorMessage =
           await FirebaseDatabase.signInWithEmailAndPassword(_emailController.text, _passwordController.text);
 
-      if (errorCode != null) {
-        String errorMessage = 'Error: Unknown Error';
-
-        if (errorCode == 'invalid-email') {
-          errorMessage = 'Error: Invalid Email';
-          _emailController.clear();
-          _passwordController.clear();
-          FocusManager.instance.primaryFocus?.unfocus();
-        } else if (errorCode == 'user-disabled') {
-          errorMessage = 'Error: Disabled Account';
-          FocusManager.instance.primaryFocus?.unfocus();
-        } else if (errorCode == 'user-not-found') {
-          errorMessage = 'Error: User Not Found';
-          _emailController.clear();
-          _passwordController.clear();
-          FocusManager.instance.primaryFocus?.unfocus();
-        } else if (errorCode == 'wrong-password') {
-          errorMessage = 'Error: Incorrect Password';
-          _passwordController.clear();
-        } else if (errorCode == 'network-request-failed') {
-          errorMessage = 'Error: No Internet Connection';
-          FocusManager.instance.primaryFocus?.unfocus();
-        }
+      if (errorMessage != null) {
+        _emailController.clear();
+        _passwordController.clear();
+        FocusManager.instance.primaryFocus?.unfocus();
 
         if (context.mounted) {
           Navigator.pop(context);

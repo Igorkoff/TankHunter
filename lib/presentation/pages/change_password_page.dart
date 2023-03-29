@@ -51,18 +51,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             return Center(child: LoadingAnimationWidget.hexagonDots(color: const Color(0xff0037C3), size: 50));
           });
 
-      String? errorCode =
+      String? errorMessage =
           await FirebaseDatabase.updatePassword(_oldPasswordController.text, _newPasswordController.text);
 
-      if (errorCode != null) {
-        String errorMessage = 'Error: Unknown Error';
-
-        if (errorCode == 'wrong-password') {
-          errorMessage = 'Error: User Not Found';
-        } else if (errorCode == 'network-request-failed') {
-          errorMessage = 'Error: No Internet Connection';
-        }
-
+      if (errorMessage != null) {
         _oldPasswordController.clear();
         _newPasswordController.clear();
         _confirmPasswordController.clear();

@@ -13,10 +13,10 @@ class FirebaseDatabase {
   static Future<String?> createUserWithEmailAndPassword(
       String email, String password, String firstName, String lastName, String passportNumber) async {
     Map<String, String?> codeResponses = {
-      "email-already-in-use": null,
-      "invalid-email": null,
+      "email-already-in-use": 'Error: Email Already in Use',
+      "invalid-email": 'Error: Invalid Email',
       "operation-not-allowed": null,
-      "weak-password": null,
+      "weak-password": 'Error: Weak Password',
     };
 
     try {
@@ -28,7 +28,7 @@ class FirebaseDatabase {
       await _uploadUserDetails(firstName.trim(), lastName.trim(), passportNumber.trim(), userCredential.user!.uid);
       return null;
     } on FirebaseAuthException catch (error) {
-      return codeResponses[error.code] ?? "Unknown";
+      return codeResponses[error.code] ?? "Error: Unknown Error";
     }
   }
 
@@ -51,17 +51,17 @@ class FirebaseDatabase {
 
   static Future<String?> signInWithEmailAndPassword(String email, String password) async {
     Map<String, String?> codeResponses = {
-      "invalid-email": null,
-      "user-disabled": null,
-      "user-not-found": null,
-      "wrong-password": null,
+      "invalid-email": 'Error: Invalid Email',
+      "user-disabled": 'Error: Disabled Account',
+      "user-not-found": 'Error: User Not Found',
+      "wrong-password": 'Error: Incorrect Password',
     };
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.trim(), password: password.trim());
       return null;
     } on FirebaseAuthException catch (error) {
-      return codeResponses[error.code] ?? "Unknown";
+      return codeResponses[error.code] ?? "Error: Unknown Error";
     }
   }
 
@@ -71,13 +71,13 @@ class FirebaseDatabase {
 
     Map<String, String?> codeResponses = {
       "user-mismatch": null,
-      "user-not-found": null,
+      "user-not-found": 'Error: User Not Found',
       "invalid-credential": null,
       "invalid-email": null,
-      "wrong-password": null,
+      "wrong-password": 'Error: Wrong Password',
       "invalid-verification-code": null,
       "invalid-verification-id": null,
-      "weak-password": null,
+      "weak-password": 'Error: Weak Password',
       "requires-recent-login": null
     };
 
@@ -86,7 +86,7 @@ class FirebaseDatabase {
       await user.updatePassword(newPassword.trim());
       return null;
     } on FirebaseAuthException catch (error) {
-      return codeResponses[error.code] ?? "Unknown";
+      return codeResponses[error.code] ?? "Error: Unknown Error";
     }
   }
 

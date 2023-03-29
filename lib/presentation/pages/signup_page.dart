@@ -54,7 +54,7 @@ class _SignupPageState extends State<SignupPage> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      String? errorCode = await FirebaseDatabase.createUserWithEmailAndPassword(
+      String? errorMessage = await FirebaseDatabase.createUserWithEmailAndPassword(
         _emailController.text,
         _passwordController.text,
         _firstNameController.text,
@@ -62,20 +62,7 @@ class _SignupPageState extends State<SignupPage> {
         _passportNumberController.text,
       );
 
-      if (errorCode != null) {
-        String errorMessage = 'Error: Unknown Error';
-
-        if (errorCode == 'invalid-email') {
-          errorMessage = 'Error: Invalid Email';
-        } else if (errorCode == 'email-already-in-use') {
-          errorMessage = 'Error: Email Already in Use';
-        } else if (errorCode == 'weak-password') {
-          errorMessage = 'Error: Weak Password';
-          _passwordController.clear();
-        } else if (errorCode == 'network-request-failed') {
-          errorMessage = 'Error: No Internet Connection';
-        }
-
+      if (errorMessage != null) {
         FocusManager.instance.primaryFocus?.unfocus();
 
         if (context.mounted) {
