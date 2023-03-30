@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tank_hunter/data/firebase_database.dart';
@@ -83,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/tank_hunter_logo_color.png', height: 50.0),
+                      Image.asset('assets/images/tank_hunter_logo_white.png'),
                       const SizedBox(height: 75.0),
                       Form(
                         key: _formKey,

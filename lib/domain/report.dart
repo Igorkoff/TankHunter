@@ -67,27 +67,6 @@ class Report {
   }
 
   setCurrentLocation() async {
-    /*
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-
-    if (!serviceEnabled) {
-      return Future.error('Location Services are Disabled.');
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location Permissions are Denied.');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error('Location Permissions are Permanently Denied.');
-    }
-    */
-
     currentLocation = await Geolocator.getCurrentPosition();
   }
 
@@ -97,14 +76,5 @@ class Report {
 
   setIsVerified(bool value) {
     isVerified = value;
-  }
-
-  reset() {
-    image = null;
-    userComment = null;
-    civilianPresence = null;
-    currentLocation = null;
-    currentDateTime = null;
-    vehiclesDetected = null;
   }
 }

@@ -208,10 +208,13 @@ class _CreateReportPageState extends State<CreateReportPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: buildButton(
-                  context: context,
-                  title: 'Submit',
-                  onPressed: _submitReport,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: buildButton(
+                    context: context,
+                    title: 'Submit',
+                    onPressed: _submitReport,
+                  ),
                 ),
               ),
             ),

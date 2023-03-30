@@ -43,9 +43,4 @@ class PendingReport extends HiveObject {
 
   @HiveField(8)
   late bool isVerified;
-
-  @override
-  String toString() {
-    return "($userID, $vehiclesDetected)";
-  }
 }

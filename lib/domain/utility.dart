@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:path/path.dart' as path;
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
