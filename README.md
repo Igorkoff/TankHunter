@@ -1,6 +1,6 @@
-# Tank Hunter – Application for Armoured Fighting Vehicles Detection
+# Tank Hunter – Final Year Project @ TU Dublin
 
-2022/2023 Final Year Project, TU Dublin
+### Mobile Application for Armoured Fighting Vehicles Detection
 
 <p align='justify'>The purpose of this project is to create a cross-platform mobile application to allow loyal citizens to assist the Armed Forces, the Main Directorate of Intelligence and the Security Service of Ukraine in gathering information regarding the movements of enemy military columns and supply convoys, while enhancing the quality of data obtained, enforcing security, and improving user experience in comparison to some of the existing solutions.</p>
 
